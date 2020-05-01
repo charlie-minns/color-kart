@@ -1,2 +1,2 @@
-export { default as Player } from './Player.js'; // For test uses
+export { default as Player } from './Player.js';
 export { default as Space } from './Space.js';
