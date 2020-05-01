@@ -1,11 +1,8 @@
-import { Group } from 'three';
 import { Vector3 } from 'three';
 import { Controller } from 'controllers'
 
-class Player extends Group {
+class Player {
   constructor() {
-    super();
-
     this._id = 'player-1';
     this._speed = 1;
     this.topSpeed = 10;
