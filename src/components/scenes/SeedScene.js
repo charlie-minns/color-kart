@@ -3,7 +3,7 @@ import { Scene, Color } from 'three';
 import { Flower, Land } from 'objects';
 import { BasicLights } from 'lights';
 
-import { Player } from '../../models/'
+import { Player } from 'models'
 
 class SeedScene extends Scene {
     constructor() {
@@ -25,7 +25,7 @@ class SeedScene extends Scene {
         const flower = new Flower(this);
         const lights = new BasicLights();
         const player = new Player();
-        this.add(land, flower, lights, player);
+        this.add(land, flower, lights);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);

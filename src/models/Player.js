@@ -1,6 +1,6 @@
 import { Group } from 'three';
 import { Vector3 } from 'three';
-import { Controller } from '../controller'
+import { Controller } from 'controllers'
 
 class Player extends Group {
   constructor() {

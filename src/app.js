@@ -9,15 +9,12 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
-// import { Space } from 'models';
+// import { Controller } from 'controllers';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
-
-// const space = new Space();
-// console.log(space);
 
 // Set up camera
 camera.position.set(6, 3, -10);
