@@ -24,7 +24,7 @@ class SeedScene extends Scene {
         const land = new Land();
         const flower = new Flower(this);
         const lights = new BasicLights();
-        const player = new Player();
+        const player = new Player(this);
         this.add(land, flower, lights);
 
         // Populate GUI
