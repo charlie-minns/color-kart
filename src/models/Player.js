@@ -1,15 +1,8 @@
 import { Vector3 } from 'three';
 import { Controller } from 'controllers'
 
-<<<<<<< HEAD
-// player object stores information about players physical attriubtes
 class Player {
   constructor(parent) {
-
-=======
-class Player {
-  constructor() {
->>>>>>> e7eaea3aa31908279050d6d93f85d19a47103232
     this._id = 'player-1';
     this._speed = 0;        // current speed
     this.topSpeed = 10;     // how fast the player can go
