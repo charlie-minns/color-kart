@@ -1,52 +1,44 @@
-import { Group } from 'three';
 import { Vector3 } from 'three';
-import { Controller } from '../controller'
+import { Controller } from 'controllers'
 
-class Player extends Group {
+<<<<<<< HEAD
+// player object stores information about players physical attriubtes
+class Player {
+  constructor(parent) {
+
+=======
+class Player {
   constructor() {
-    super();
-
+>>>>>>> e7eaea3aa31908279050d6d93f85d19a47103232
     this._id = 'player-1';
-    this._speed = 1;
-    this.topSpeed = 10;
-    this.mass = 1;
-    this.netForce = 0;
+    this._speed = 0;        // current speed
+    this.topSpeed = 10;     // how fast the player can go
+    this.mass = 1;          // weight of the kart
+    this.steering = 0.1;    // how efficient steering of kart is (in radians)
+    this.netForce = new Vector3(0, 0, 0);
     this._acceleration = 0;
     this._travelledDistance = 0;
     this._coordinates = new Vector3(0, 0, 0);
+    this._previous = new Vector3(0, 0, 0);
     this.direction = new Vector3(0, 0, 1);
     this.controller = new Controller(this);
+
+    parent.addToUpdateList(this);
   }
 
-  set speed(speed) {
+  setSpeed(speed) {
     this._speed = Math.max(0, Math.min(speed, this.topSpeed));
   }
 
-  get speed() {
+  getSpeed() {
     return this._speed;
   }
 
-	set acceleration(acceleration) {
-    this._acceleration = acceleration; // TODO
-  }
-
-  get acceleration() {
-    return this._acceleration;
-  }
-
-  set travelledDistance(dist) {
-    this._travelledDistance = dist;
-  }
-
-  get travelledDistance() {
-    return this._travelledDistance;
-  }
-
-  set coordinates(coord) {
+  setCoordinates(coord) {
     this._coordinates = coord;
   }
 
-  get coordinates() {
+  getCoordinates() {
     return this._coordinates;
   }
 
@@ -54,38 +46,71 @@ class Player extends Group {
     this.travelledDistance += newDist;
   }
 
+  // use verlet integration to update position depending on forces acting on kart
+  integrate(deltaT) {
+    const DAMPING = 0.03;
+
+    // update previous position
+    var pos = this._coordinates.clone();
+    var previous = this._previous;
+    this._previous = pos;
+
+    // update new position
+    var v = pos.clone().sub(previous).divideScalar(deltaT);
+    this.setSpeed(v.length());
+    var vdt = v.multiplyScalar(deltaT);
+    var a = this.netForce.clone().divideScalar(this.mass);
+    this._coordinates.add(vdt.multiplyScalar(1-DAMPING)).add(a.multiplyScalar(deltaT*deltaT));
+
+    // reset the netforce
+    this.netForce = new Vector3(0, 0, 0);
+    // ----------- STUDENT CODE END ------------
+  }
+
   // adds a force f to the player
   addForce(f) {
     this.netForce.add(f);
   }
 
-  // move player position forward
+  // rotate the kart by a given angle
+  rotate(theta) {
+    var x = this.direction.x;
+    var z = this.direction.z;
+    this.direction.x = x*Math.cos(theta) + z*Math.sin(theta);
+    this.direction.z = z*Math.cos(theta) - x*Math.sin(theta);
+    this.direction.normalize();
+  }
+
+  // apply force to player to move in direction it is facing
   moveForward() {
-    // S = S0 + Ut + 0.5at^2 : assume t = 1
-    let speed = this.direction.clone().multiplyScalar(this._speed);
-    let a = this.direction.clone().multiplyScalar(0.5*this._acceleration);
-    this._coordinates.add(speed).add(a);
+    var f = this.direction.clone();
+    this.addForce(f);
     console.log('forward:', this._coordinates);
   }
 
-  // move player position backward
+  // apply force to player to move in the opposite direction that it is facing
   moveBackward() {
-    let speed = this.direction.clone().multiplyScalar(this._speed);
-    let a = this.direction.clone().multiplyScalar(0.5*this._acceleration);
-    this._coordinates.sub(speed).add(a);
+    var f = this.direction.clone();
+    this.addForce(f.negate());
     console.log('back:', this._coordinates);
   }
 
   // move player direction left
   steerLeft() {
-    // change direction
+    this.rotate(this.steering);
     console.log('left:', this.direction);
   }
 
   // move player direction right
   steerRight() {
-    // change direction 
+    // change direction
+    this.rotate(-this.steering);
     console.log('right:', this.direction);
+  }
+
+  // update the players attributes
+  update(timeStamp) {
+    this.integrate(timeStamp / 10000);
   }
 }
 

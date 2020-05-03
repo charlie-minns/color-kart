@@ -9,9 +9,6 @@ function Controller(player) {
   function handleImpactEvents(event) {
     // move player forward if up arrow is pressed
     if (event.key == "ArrowUp") {
-      // should user interaction apply a force to the car?
-      // up arrow applies force in direction kart is facing
-      // updating forces results in movement
       player.moveForward();
     }
 
