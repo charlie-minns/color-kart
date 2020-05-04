@@ -1,21 +1,24 @@
-import { Group } from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODEL from './road.gltf';
+import { Group, RingBufferGeometry, MeshPhongMaterial, Mesh, Scene } from 'three';
 
 class Road extends Group {
-    constructor() {
+    constructor(parent) {
 
         // Call parent Group() constructor
         super();
 
-        const loader = new GLTFLoader();
-
         this.name = 'road';
 
-        loader.load(MODEL, (gltf) => {
-            this.add(gltf.scene);
-        });
-    }
+        // Geometry of the track
+        const roadGeometry = new RingBufferGeometry(3, 7, 40, 40, 0, 6.3);
+        roadGeometry.rotateX(3 * (Math.PI / 2));
+
+        // Material of the track
+        const roadMaterial = new MeshPhongMaterial( {color: 0xAA42F5} );
+
+        // Add the track to the scene
+        const track = new Mesh(roadGeometry, roadMaterial);
+        parent.add(track);
+    } 
 }
 
 export default Road;

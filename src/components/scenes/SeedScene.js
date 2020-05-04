@@ -14,13 +14,14 @@ class SeedScene extends Scene {
         };
 
         // Set background to a nice color
-        this.background = new Color(0x7ec0ee);
+        // this.background = new Color(0x7ec0ee);
+        this.background = new Color(0x2d2c2e);
 
         // Add meshes to scene
         const land = new Land();
         const lights = new BasicLights();
         const player = new Player(this);
-        const road = new Road();
+        const road = new Road(this);
         this.add(land, lights, road, player);
     }
 
