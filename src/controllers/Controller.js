@@ -1,30 +1,39 @@
 function Controller(player) {
   this.player = player;
 
+  // add the keys pressed to a dictionary
   window.addEventListener("keydown", function(event) {
-      handleImpactEvents(event);
+      player.keys[event.key] = true;
   });
 
-  // handle user interaction when a key is pressed
-  function handleImpactEvents(event) {
-    // move player forward if up arrow is pressed
-    if (event.key == "ArrowUp") {
-      player.moveForward();
-    }
+  // add the keys pressed to a dictionary
+  window.addEventListener("keyup", function(event) {
+      player.keys[event.key] = false;
+  });
 
-    // move player back if up down is pressed
-    if (event.key == "ArrowDown") {
-      player.moveBackward();
-    }
+  // move player depending on keys pressed
+  this.apply = function() {
+    // iterate over all keys pressed
+    for (var key in player.keys) {
+      // move player forward if up arrow is pressed
+      if (key == "ArrowUp" && player.keys[key]) {
+        player.moveForward();
+      }
 
-    // move player left if left arrow is pressed
-    if (event.key == "ArrowLeft") {
-      player.steerLeft();
-    }
+      // move player back if up down is pressed
+      if (key == "ArrowDown" && player.keys[key]) {
+        player.moveBackward();
+      }
 
-    // move player right if right arrow is pressed
-    if (event.key == "ArrowRight") {
-      player.steerRight();
+      // move player left if left arrow is pressed
+      if (key == "ArrowLeft" && player.keys[key]) {
+        player.steerLeft();
+      }
+
+      // move player right if right arrow is pressed
+      if (key == "ArrowRight" && player.keys[key]) {
+        player.steerRight();
+      }
     }
   }
 }

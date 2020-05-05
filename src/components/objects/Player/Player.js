@@ -5,7 +5,7 @@ import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import MODEL from '../Flower/flower.gltf';
 
 class Player extends Group {
-  constructor(parent) {
+  constructor(parent, camera) {
     super();
 
     this.name = 'player-1';
@@ -14,10 +14,11 @@ class Player extends Group {
     this.mass = 1;          // weight of the kart
     this.steering = 0.1;    // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
-    this.position.set(0, 0, 0); // default is (0, 0, 0)
+    this.position.set(1.4, 0, 0);         // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
-    this.rotation.set(0, 0, 0);    // default is (0, 0, 0)
+    this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
+    this.keys = {};         // keys that are pressed
 
     // Load object
     const loader = new GLTFLoader();
@@ -25,6 +26,11 @@ class Player extends Group {
     loader.load(MODEL, (gltf) => {
         this.add(gltf.scene);
     });
+
+    // Set the camera
+    camera.position.set(5, 5, 5);
+    camera.lookAt(this.position);
+    this.add(camera);
 
     parent.addToUpdateList(this);
   }
@@ -66,7 +72,6 @@ class Player extends Group {
     var theta = this.rotation.y;
     var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
     this.addForce(f.negate());
-    console.log('forward:', this.position);
   }
 
   // apply force to player to move in the opposite direction that it is facing
@@ -74,23 +79,22 @@ class Player extends Group {
     var theta = this.rotation.y;
     var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
     this.addForce(f);
-    console.log('back:', this.position);
   }
 
   // move player direction left
   steerLeft() {
     this.rotation.y += this.steering;
-    console.log('left:', this.rotation);
   }
 
   // move player direction right
   steerRight() {
     this.rotation.y -= this.steering;
-    console.log('right:', this.rotation);
   }
 
   // update the players attributes
   update(timeStamp) {
+    this.controller.apply();
+
     var deltaT = timeStamp % 100;
     // not really sure how to use timeStamp to set deltaT
     this.integrate(deltaT/500);
