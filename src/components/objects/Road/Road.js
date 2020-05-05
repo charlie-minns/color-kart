@@ -1,4 +1,4 @@
-import { Group, RingBufferGeometry, MeshPhongMaterial, Mesh, Scene } from 'three';
+import { Group, RingBufferGeometry, MeshBasicMaterial, Mesh, Scene } from 'three';
 
 class Road extends Group {
     constructor(parent) {
@@ -8,12 +8,13 @@ class Road extends Group {
         this.name = 'road';
 
         // Geometry of the track
-        const roadGeometry = new RingBufferGeometry(40, 50, 40, 40, 0, 6.3);
+        const roadGeometry = new RingBufferGeometry(30, 70, 40, 40, 0, 6.3);
         roadGeometry.rotateX(3 * (Math.PI / 2));
         this.geometry = roadGeometry;
 
         // Material of the track
-        const roadMaterial = new MeshPhongMaterial( {color: 0xAA42F5} );
+        const roadMaterial = new MeshBasicMaterial( {color: 0xAA42F5} );
+        roadMaterial.wireframe = true;
         this.material = roadMaterial;
 
         // Add the track to the scene

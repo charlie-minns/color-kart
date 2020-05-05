@@ -1,8 +1,10 @@
-import { Vector3, Group } from 'three';
+import { Vector3, Group, Euler } from 'three';
 import { Controller } from 'controllers';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
-import MODEL from '../Flower/flower.gltf';
+import MODEL from './Standard Kart.obj';
+import MAT from './Standard Kart.mtl';
 
 class Player extends Group {
   constructor(parent, camera) {
@@ -14,21 +16,35 @@ class Player extends Group {
     this.mass = 1;          // weight of the kart
     this.steering = 0.1;    // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
-    this.position.set(1.4, 0, 0);         // default start position is (0, 0, 0) because of Group
+    this.position.set(1.4, 0.1, 0);         // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
 
-    // Load object
-    const loader = new GLTFLoader();
-
-    loader.load(MODEL, (gltf) => {
-        this.add(gltf.scene);
+    // Load object - Piazza Post @527
+    const loader = new OBJLoader();
+    /* No console errors, but does not appear
+    const mtlLoader = new MTLLoader();
+    mtlLoader.setResourcePath('src/components/objects/Player/');
+    mtlLoader.load(MAT, (material) => {
+      material.preload();
+      loader.setMaterials(material).load(MODEL, (obj) => {
+        obj.rotateY(Math.PI); // Roate to correct orientation
+        this.add(obj);
+      });
+    }); 
+    */
+    loader.load(MODEL, (obj) => {
+        obj.rotateY(Math.PI); // Roate to correct orientation
+        // debugger;
+        this.add(obj);
     });
 
+    // Rotate object to correct orrientation
+
     // Set the camera
-    camera.position.set(5, 5, 5);
+    camera.position.set(this.position.x, this.position.y + 5, 5);
     camera.lookAt(this.position);
     this.add(camera);
 
