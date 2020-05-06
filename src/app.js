@@ -12,8 +12,13 @@ import { SeedScene } from 'scenes';
 
 // Initialize core ThreeJS components
 const camera = new PerspectiveCamera();
-const scene = new SeedScene(camera);
 const renderer = new WebGLRenderer({ antialias: true });
+
+// add camera for second player
+const camera2 = new PerspectiveCamera();
+
+// create scene
+const scene = new SeedScene(camera, camera2);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -33,9 +38,29 @@ controls.update();*/
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-    //controls.update();
+    // get screen width and height
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    // clear renderer
+    renderer.setScissorTest(false);
+    renderer.clear(true, true);
+    renderer.setScissorTest(true);
+
+    // render for second player (left)
+    renderer.setScissor(1, 1, w/2 - 2, h - 2);
+    renderer.setViewport(1, 1, w/2 - 2, h - 2);
+    renderer.render(scene, camera2);
+
+    // render for first player (right)
+    renderer.setScissor(w/2 + 1, 1, w/2 - 2, h - 2);
+    renderer.setViewport(w/2 + 1, 1, w/2 - 2, h - 2);
     renderer.render(scene, camera);
+
+    // update scene
     scene.update && scene.update(timeStamp);
+
+    //
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
@@ -44,8 +69,12 @@ window.requestAnimationFrame(onAnimationFrameHandler);
 const windowResizeHandler = () => {
     const { innerHeight, innerWidth } = window;
     renderer.setSize(innerWidth, innerHeight);
-    camera.aspect = innerWidth / innerHeight;
+
+    camera.aspect = innerWidth / innerHeight / 2;
     camera.updateProjectionMatrix();
+
+    camera2.aspect = innerWidth / innerHeight / 2;
+    camera2.updateProjectionMatrix();
 };
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);

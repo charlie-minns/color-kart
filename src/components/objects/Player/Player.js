@@ -7,10 +7,10 @@ import MODEL from './Standard Kart.obj';
 import MAT from './Standard Kart.mtl';
 
 class Player extends Group {
-  constructor(parent, camera) {
+  constructor(parent, camera, name) {
     super();
 
-    this.name = 'player-1';
+    this.name = name;
     this.speed = 0;         // current speed
     this.topSpeed = 10;     // how fast the player can go
     this.mass = 1;          // weight of the kart
@@ -33,7 +33,7 @@ class Player extends Group {
         obj.rotateY(Math.PI); // Roate to correct orientation
         this.add(obj);
       });
-    }); 
+    });
     */
     loader.load(MODEL, (obj) => {
         obj.rotateY(Math.PI); // Roate to correct orientation
@@ -44,7 +44,7 @@ class Player extends Group {
     // Rotate object to correct orrientation
 
     // Set the camera
-    camera.position.set(this.position.x, this.position.y + 5, 5);
+    camera.position.set(this.position.x - 1, this.position.y + 2, this.position.z + 5);
     camera.lookAt(this.position);
     this.add(camera);
 

@@ -1,10 +1,10 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color } from 'three';
+import { Scene, Color, Vector3 } from 'three';
 import { Flower, Road, Player } from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
-    constructor(camera) {
+    constructor(camera, camera2) {
         // Call parent Scene() constructor
         super();
 
@@ -19,13 +19,14 @@ class SeedScene extends Scene {
 
         // Create meshes to scene
         const lights = new BasicLights();
-        const player = new Player(this, camera);
+        const player = new Player(this, camera, "player1");
+        const player2 = new Player(this, camera2, "player2");
         const road = new Road(this);
         this.road = road;
-        this.player = player;
+        this.players = [player, player2];
 
         // add meshes to scene
-        this.add(lights, road, player);
+        this.add(lights, road, player, player2);
     }
 
     addToUpdateList(object) {
@@ -33,15 +34,24 @@ class SeedScene extends Scene {
     }
 
     // withinRoad
-    checkRoad(timeStamp) {
+    checkRoad(timeStamp, player) {
+      const EPS = 1;
       var roadParams = this.road.geometry.parameters;
       var iR = roadParams.innerRadius;
       var oR = roadParams.outerRadius;
-      var pos = this.player.position;
+      var pos = player.position;
       var r = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.z, 2));
-      if ((r < iR || r > oR) && timeStamp > 3000) {
-        var prev = this.player.previous;
-        this.player.position.set(prev.x, prev.y, prev.z);
+      // could we check mesh collisions instead of positions?
+      if ((r - iR < EPS || oR - r < EPS) && timeStamp > 3000) {
+        var prev = player.previous;
+        player.position.set(prev.x, prev.y, prev.z);
+
+        // bounce off side of road
+        /*
+        var theta = this.rotation.y;
+        var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+        if (r - iR < EPS) f.negate();
+        this.player.addForce(f);*/
       }
     }
 
@@ -54,7 +64,9 @@ class SeedScene extends Scene {
         }
 
         // check player is within road, if not set to previous player position
-        this.checkRoad(timeStamp);
+        for (var player of this.players) {
+          this.checkRoad(timeStamp, player);
+        }
     }
 }
 
