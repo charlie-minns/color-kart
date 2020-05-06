@@ -9,6 +9,11 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+
 
 // Initialize core ThreeJS components
 const camera = new PerspectiveCamera();
@@ -28,6 +33,15 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
+// Global variables for ShaderToy
+global.uniforms = {
+    iTime: { value: 0 },
+    iResolution:  { value: new Vector3(canvas.width, canvas.height, 1) },
+};
+
+const camera = new PerspectiveCamera();
+const scene = new SeedScene(camera);
+
 // Set up controls
 /*const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
@@ -35,6 +49,28 @@ controls.enablePan = false;
 //controls.minDistance = 4;
 //controls.maxDistance = 16;
 controls.update();*/
+
+// Bloom Effect
+/*
+const params = {
+    exposure: 1,
+    bloomStrength: 0.2,
+    bloomThreshold: 0.8,
+    bloomRadius: 0
+};
+
+
+const renderPass = new RenderPass(scene, camera);
+
+const bloomPass = new UnrealBloomPass( new Vector2( innerWidth, innerHeight ), 1.5, 0, 0 );
+bloomPass.threshold = params.bloomThreshold;
+bloomPass.strength = params.bloomStrength;
+bloomPass.radius = params.bloomRadius;
+
+const composer = new EffectComposer( renderer );
+composer.addPass( renderPass );
+composer.addPass( bloomPass );
+*/
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
@@ -59,6 +95,10 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     // update scene
     scene.update && scene.update(timeStamp);
+
+    //
+    global.uniforms.iTime.value = timeStamp * 0.001;
+    //composer.render();
 
     //
     window.requestAnimationFrame(onAnimationFrameHandler);
