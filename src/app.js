@@ -14,16 +14,8 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 
-
-// Initialize core ThreeJS components
-const camera = new PerspectiveCamera();
+// Initialize renderer
 const renderer = new WebGLRenderer({ antialias: true });
-
-// add camera for second player
-const camera2 = new PerspectiveCamera();
-
-// create scene
-const scene = new SeedScene(camera, camera2);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -39,8 +31,12 @@ global.uniforms = {
     iResolution:  { value: new Vector3(canvas.width, canvas.height, 1) },
 };
 
+// Initialize core ThreeJS components
 const camera = new PerspectiveCamera();
-const scene = new SeedScene(camera);
+// add camera for second player
+const camera2 = new PerspectiveCamera();
+// create scene
+const scene = new SeedScene(camera, camera2);
 
 // Set up controls
 /*const controls = new OrbitControls(camera, canvas);
