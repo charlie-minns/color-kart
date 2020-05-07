@@ -14,18 +14,9 @@ class SeedScene extends Scene {
             updateList: [],
         };
 
-        // Set background to a nice color
-        // this.background = new Color(0x7ec0ee);
-        // this.background = new Color(0x2d2c2e);
+        // Create background skybox
         const cubeLoader = new CubeTextureLoader();
-        const texture = cubeLoader.load([
-          MAT,
-          MAT,
-          MAT,
-          MAT,
-          MAT,
-          MAT
-        ]);
+        const texture = cubeLoader.load([MAT, MAT, MAT, MAT, MAT, MAT]);
         this.background = texture;
 
         // Create meshes to scene
