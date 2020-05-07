@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Group, MeshBasicMaterial, Vector4 } from 'three';
+import { Vector3, Face3, Matrix4, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4 } from 'three';
 import { Controller } from 'controllers';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
@@ -7,7 +7,7 @@ import MODEL from './Standard Kart.obj';
 import MAT from './Standard Kart.mtl';
 
 class Player extends Group {
-  constructor(parent, camera, name) {
+  constructor(parent, camera, name, pos) {
     super();
 
     this.name = name;
@@ -16,11 +16,20 @@ class Player extends Group {
     this.mass = 1;          // weight of the kart
     this.steering = 0.05;    // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
-    this.position.set(1.4, 0.01, 0);         // default start position is (0, 0, 0) because of Group
+    this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
+
+    // cube around kart to detect collisions
+    var cube = new CubeGeometry(3, 2, 6);
+    var wireMaterial = new MeshBasicMaterial(
+      {color: 0xff0000, transparent:true, opacity:0.0});
+    var box = new Mesh(cube, wireMaterial);
+	  box.position.set(pos.x, pos.y+0.5, pos.z);
+    box.rotation.set(0, 0, 0);
+    this.box = box;
 
     const m = new Matrix4();
     const s = 2.0;
@@ -85,6 +94,7 @@ class Player extends Group {
     });
 
 
+
     // Set the camera
     camera.position.set(this.position.x, this.position.y + 6, this.position.z + 16);
     camera.lookAt(this.position);
@@ -93,13 +103,21 @@ class Player extends Group {
     parent.addToUpdateList(this);
   }
 
+  // updates the bounding box depending on the players position
+  updateBox() {
+    var pos = this.position;
+    var r = this.rotation;
+    this.box.position.set(pos.x, pos.y+0.5, pos.z);
+    this.box.rotation.set(r.x, r.y, r.z);
+  }
+
   setSpeed(speed) {
     this._speed = Math.max(0, Math.min(speed, this.topSpeed));
   }
 
   // use verlet integration to update position depending on forces acting on kart
   integrate(deltaT) {
-    const DAMPING = 0.03;
+    const DAMPING = 0.04;
 
     // update previous position
     var pos = this.position.clone();
@@ -123,6 +141,19 @@ class Player extends Group {
   // adds a force f to the player
   addForce(f) {
     this.netForce.add(f);
+  }
+
+  // bounce player after colliding with something
+  // bounce away from collided face normal if given
+  // this is not working very well
+  bounce(normal) {
+    var prev = this.previous;
+    this.position.set(prev.x, prev.y, prev.z);
+    var theta = this.rotation.y;
+    var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+    if (normal) f.add(normal);
+    f.multiplyScalar(20*this.mass);
+    this.addForce(f);
   }
 
   // apply force to player to move in direction it is facing
@@ -157,6 +188,9 @@ class Player extends Group {
     // not really sure how to use timeStamp to set deltaT
     this.integrate(deltaT/500);
     TWEEN.update();
+
+    // update position of bounding box
+    this.updateBox();
   }
 }
 
