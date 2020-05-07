@@ -31,6 +31,7 @@ class Player extends Group {
     box.rotation.set(0, 0, 0);
     this.box = box;
 
+  >>>>>>> faca56225579730d1cd4cf1b8a97a705fc337be8
     const m = new Matrix4();
     const s = 2.0;
     m.set(
@@ -41,58 +42,22 @@ class Player extends Group {
     );
 
 
-    // Load object - Piazza Post @527
-    //const loader = new OBJLoader();
-    /* No console errors, but does not appear
+    // Load object - Piazza Post @527 (Still not working)
     const mtlLoader = new MTLLoader();
-    mtlLoader.setResourcePath('src/components/objects/Player/');
+    mtlLoader.setResourcePath('/src/components/objects/Player/');
     mtlLoader.load(MAT, (material) => {
+      //debugger;
       material.preload();
       //debugger;
-      loader.setMaterials( material ).load(MODEL, (obj) => {
-        //obj.rotateY(Math.PI); // Roate to correct orientation
-        //debugger;
-        this.add( obj );
-      });
-    });
-    */
-
-    // Load object
-    const loader = new OBJLoader();
-    /*
-    const mtlLoader = new MTLLoader();
-    mtlLoader.setResourcePath('src/components/objects/Player/');
-    mtlLoader.load(MAT, (material) => {
-      material.preload();
-      //debugger;
-      loader.setMaterials(material).load(MODEL, (obj) => {
-        debugger;
-
-        let i = 0;
-        obj.traverse( (child) => {
-          child.material = material[i];
-        });
-
-       obj.children[0] = material.m_body;
-        this.add(obj);
-      });
-    }); */
-
-
-    loader.load(MODEL, (obj) => {
+      const loader = new OBJLoader();
+      loader.setMaterials(material);
+      loader.setResourcePath('/src/components/objects/Player/')
+      loader.load(MODEL, (obj) => {
         obj.rotateY(Math.PI); // Roate to correct orientation
-        //debugger;
-        const mat = new MeshBasicMaterial( {color: 0xFFFFFF} );
-        //mat.wireframe = true;
-        obj.children[0].material = mat;
-        obj.children[1].material = mat;
-
-        // Scale object
-        obj.applyMatrix4(m);
-
+        obj.applyMatrix4(m); // Scale object
         this.add(obj);
+      });
     });
-
 
 
     // Set the camera

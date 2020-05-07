@@ -30,6 +30,11 @@ module.exports = {
                 exclude: path.resolve(__dirname, './node_modules/'),
             },
             {
+                test: /\.(mtl)$/i,
+                use: 'mtl-loader',
+                exclude: path.resolve(__dirname, './node_modules/'),
+            },
+            {
                 type: 'javascript/auto',
                 test: /\.(json)/,
                 exclude: path.resolve(__dirname, './node_modules/'),
