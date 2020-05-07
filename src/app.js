@@ -6,8 +6,9 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
 import { SeedScene } from 'scenes';
+import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).wav';
 
 
 // Initialize renderer
@@ -29,12 +30,24 @@ global.uniforms = {
 
 // Initialize core ThreeJS components
 const camera = new PerspectiveCamera();
-// add camera for second player
+// Add camera for second player
 const camera2 = new PerspectiveCamera();
-// create scene
+// Create scene
 const scene = new SeedScene(camera, camera2);
 
-// Audio (Background Music)?
+// Create an AudioListener and add it to the camera
+const listener = new AudioListener();
+camera.add(listener);
+
+// Load music and set it as the Audio object's buffer
+const backgroundMusic = new Audio(listener);
+const audioLoader = new AudioLoader();
+audioLoader.load( MUSIC, function(buffer) {
+	backgroundMusic.setBuffer(buffer);
+	backgroundMusic.setLoop(true);
+	backgroundMusic.setVolume(0.1);
+	backgroundMusic.play();
+});
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
@@ -62,7 +75,6 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     //
     global.uniforms.iTime.value = timeStamp * 0.001;
-    //composer.render();
 
     //
     window.requestAnimationFrame(onAnimationFrameHandler);
