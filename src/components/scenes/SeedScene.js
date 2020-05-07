@@ -1,7 +1,8 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, Vector3, Raycaster } from 'three';
+import { Scene, Color, CubeTextureLoader, Vector3, Raycaster } from 'three';
 import { Flower, Road, Player } from 'objects';
 import { BasicLights } from 'lights';
+import MAT from './galaxy.jpg';
 
 class SeedScene extends Scene {
     constructor(camera, camera2) {
@@ -15,7 +16,17 @@ class SeedScene extends Scene {
 
         // Set background to a nice color
         // this.background = new Color(0x7ec0ee);
-        this.background = new Color(0x2d2c2e);
+        // this.background = new Color(0x2d2c2e);
+        const cubeLoader = new CubeTextureLoader();
+        const texture = cubeLoader.load([
+          MAT,
+          MAT,
+          MAT,
+          MAT,
+          MAT,
+          MAT
+        ]);
+        this.background = texture;
 
         // Create meshes to scene
         const lights = new BasicLights();

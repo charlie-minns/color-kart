@@ -1,10 +1,13 @@
 import { Vector3, Face3, Matrix4, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4 } from 'three';
 import { Controller } from 'controllers';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { MtlObjBridge } from 'three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
-import MODEL from './Standard Kart.obj';
 import MAT from './Standard Kart.mtl';
+import MODEL from './Standard Kart.obj';
+
 
 class Player extends Group {
   constructor(parent, camera, name, pos) {
@@ -30,38 +33,49 @@ class Player extends Group {
 	  box.position.set(pos.x, pos.y+0.5, pos.z);
     box.rotation.set(0, 0, 0);
     this.box = box;
-
-  >>>>>>> faca56225579730d1cd4cf1b8a97a705fc337be8
-    const m = new Matrix4();
-    const s = 2.0;
-    m.set(
-      s, 0, 0, 0,
-      0, s, 0, 0,
-      0, 0, s, 0,
-      1, 1, 1, 1
-    );
-
-
-    // Load object - Piazza Post @527 (Still not working)
+    
+    /* Load object - Piazza Post @527 (Still not working)
     const mtlLoader = new MTLLoader();
-    mtlLoader.setResourcePath('/src/components/objects/Player/');
     mtlLoader.load(MAT, (material) => {
       //debugger;
-      material.preload();
+      //material.preload();
       //debugger;
-      const loader = new OBJLoader();
-      loader.setMaterials(material);
-      loader.setResourcePath('/src/components/objects/Player/')
+      const loader = new OBJLoader2();
+      const materials = MtlObjBridge.addMaterialsFromMtlLoader(material);
+      
+      loader.addMaterials(materials);
       loader.load(MODEL, (obj) => {
         obj.rotateY(Math.PI); // Roate to correct orientation
-        obj.applyMatrix4(m); // Scale object
         this.add(obj);
       });
     });
+    */
 
+    // Three JS Tutorial
+    const mtlLoader = new MTLLoader();
+    mtlLoader.load(MAT, (material) => {
+      const objLoader = new OBJLoader2();
+      const materials = MtlObjBridge.addMaterialsFromMtlLoader(material);
+      objLoader.addMaterials(materials);
+      objLoader.load(MODEL, (obj) => {
+        obj.rotateY(Math.PI); // Roate to correct orientation
+        this.add(obj);
+      });
+    });
+    
+    
+    /* Load object
+    const loader = new GLTFLoader();
+    loader.setResourcePath('/src/components/objects/Player/');
+    //this.name = 'flower';
+    loader.load(MODEL, (gltf) => {
+      gltf.rotateY(Math.PI); // Roate to correct orientation\
+      this.add(gltf.scene);
+    });
+    */
 
     // Set the camera
-    camera.position.set(this.position.x, this.position.y + 6, this.position.z + 16);
+    camera.position.set(this.position.x, this.position.y + 4, this.position.z + 9);
     camera.lookAt(this.position);
     this.add(camera);
 
