@@ -1,4 +1,4 @@
-import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4 } from 'three';
+import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4, Euler } from 'three';
 import { Controller } from 'controllers';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
@@ -20,18 +20,18 @@ class Player extends Group {
     this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
     this.rotation.set(0, 0, 0);
+    this.previousRotation = new Euler(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
 
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
-    var wireMaterial = new MeshBasicMaterial(
-      {color: 0xff0000, transparent:true, opacity:0.0});
+    var wireMaterial = new MeshBasicMaterial({color: 0xff0000, transparent:true, opacity:0.0});
     var box = new Mesh(cube, wireMaterial);
-	  box.position.set(pos.x, pos.y+0.25, pos.z);
+	  box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     box.rotation.set(0, 0, 0);
     this.box = box;
-    
+
     // Determine which object to load
     let model;
     if (this.name === 'player1') {
@@ -59,7 +59,7 @@ class Player extends Group {
   updateBox() {
     var pos = this.position;
     var r = this.rotation;
-    this.box.position.set(pos.x, pos.y+0.25, pos.z);
+    this.box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     this.box.rotation.set(r.x, r.y, r.z);
   }
 
@@ -75,6 +75,7 @@ class Player extends Group {
     var pos = this.position.clone();
     var previous = this.previous;
     this.previous = pos;
+    this.previousRotation = this.rotation;
 
     // update new position
     var v = pos.clone().sub(previous).divideScalar(deltaT);
@@ -97,15 +98,14 @@ class Player extends Group {
 
   // bounce player after colliding with something
   // bounce away from collided face normal if given
-  // this is not working very well
-  bounce(normal) {
+  bounce(normal, timeStamp) {
     var prev = this.previous;
     this.position.set(prev.x, prev.y, prev.z);
-    var theta = this.rotation.y;
-    var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
-    if (normal) f.add(normal);
-    f.multiplyScalar(5*this.mass);
-    this.addForce(f);
+    normal.normalize();
+    normal.multiplyScalar(5);
+    normal.divideScalar(this.mass);
+    this.addForce(normal);
+    this.update(timeStamp);
   }
 
   // apply force to player to move in direction it is facing

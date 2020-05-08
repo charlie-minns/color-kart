@@ -18,22 +18,22 @@ function Controller(player) {
       // keys to control player1
       if (player.name == "player1") {
         // move forward if w is pressed
-        if (key == "w" && player.keys[key]) {
+        if ((key == "w" || key == "W") && player.keys[key]) {
           player.moveForward();
         }
 
         // move back if s is pressed
-        if (key == "s" && player.keys[key]) {
+        if ((key == "s" || key == "S") && player.keys[key]) {
           player.moveBackward();
         }
 
         // turn left if a is pressed
-        if (key == "a" && player.keys[key]) {
+        if ((key == "a" || key == "A") && player.keys[key]) {
           player.steerLeft();
         }
 
         // turn right if d is pressed
-        if (key == "d" && player.keys[key]) {
+        if ((key == "d" || key == "D") && player.keys[key]) {
           player.steerRight();
         }
       }

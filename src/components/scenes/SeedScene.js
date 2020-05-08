@@ -23,19 +23,21 @@ class SeedScene extends Scene {
         const lights = new BasicLights();
         const road = new Road(this);
         this.road = road;
+        this.innerEdge = road.innerEdge;
+        this.outerEdge = road.outerEdge;
 
         // Calculate starting positons of players
         const roadParams = this.road.geometry.parameters;
         const iR = roadParams.innerRadius;
         const oR = roadParams.outerRadius;
-        const p1 = new Vector3(1.75, 0.01, 0);
-        const p2 = new Vector3(2, 0.01, 0);
+        const p1 = new Vector3(1.9, 0.01, 0.05);
+        const p2 = new Vector3(2.1, 0.01, 0);
 
         // Create Players
         const player = new Player(this, camera1, "player1", p1);
         const player2 = new Player(this, camera2, "player2", p2);
         this.players = [player, player2];
-        this.collideableObjects = [];
+        this.collideableObjects = [this.innerEdge, this.outerEdge];
 
         // add meshes to scene
         this.add(lights, road, player, player2, player.box, player2.box);
@@ -45,22 +47,9 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
-    // withinRoad
-    checkRoad(timeStamp, player) {
-      const EPS = 2;
-      var roadParams = this.road.geometry.parameters;
-      var iR = roadParams.innerRadius;
-      var oR = roadParams.outerRadius;
-      var pos = player.position;
-      var r = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.z, 2));
-      if (r - iR < EPS || oR - r < EPS) {
-        player.bounce(undefined);
-      }
-    }
-
     // check for collisions between each player and collidable objects
     // https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Collision-Detection.html
-    checkCollisions(player) {
+    checkCollisions(player, timeStamp) {
       var pos = player.position.clone();
       var box = player.box;
 
@@ -72,13 +61,14 @@ class SeedScene extends Scene {
     		var ray = new Raycaster(pos, dv.clone().normalize() );
     		var collisions = ray.intersectObjects(this.collideableObjects);
     		if (collisions.length > 0 && collisions[0].distance < dv.length()) {
-          console.log("hit");
+          collisions[0].face.normal.y = 0;
+          player.bounce(collisions[0].face.normal, timeStamp);
         }
     	}
     }
 
     // check for collisions between players
-    checkPlayer(player1, player2) {
+    checkPlayer(player1, player2, timeStamp) {
       var pos = player1.position.clone();
       var box = player1.box;
 
@@ -90,8 +80,10 @@ class SeedScene extends Scene {
     		var ray = new Raycaster(pos, dv.clone().normalize() );
     		var collisions = ray.intersectObject(player2.box);
     		if (collisions.length > 0 && collisions[0].distance < dv.length()) {
-          player1.bounce(collisions[0].face.normal);
-          player2.bounce(collisions[0].face.normal);
+          collisions[0].face.normal.y = 0;
+          var norm = collisions[0].face.normal;
+          player1.bounce(norm.clone(), timeStamp);
+          player2.bounce(norm.clone().negate(), timeStamp);
         }
     	}
     }
@@ -107,15 +99,12 @@ class SeedScene extends Scene {
 
         // checking for collisions
         for (var player of this.players) {
-          // check player is within road
-          if (timeStamp > 3000) this.checkRoad(timeStamp, player);
-
           // check for collisions
-          if (timeStamp > 3000) this.checkCollisions(player);
+          if (timeStamp > 3000) this.checkCollisions(player, timeStamp);
         }
 
         // checking for collisions between players
-        if (timeStamp > 3000) this.checkPlayer(this.players[0], this.players[1]);
+        if (timeStamp > 3000) this.checkPlayer(this.players[0], this.players[1], timeStamp);
     }
 }
 
