@@ -1,11 +1,9 @@
-import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4 } from 'three';
+import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial } from 'three';
 import { Controller } from 'controllers';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import MARIO from './Red Kart.glb';
 import LUIGI from './Green Kart.glb';
-
-
 
 class Player extends Group {
   constructor(parent, camera, name, pos) {
@@ -47,9 +45,27 @@ class Player extends Group {
       this.add(gltf.scene);
     });
 
-    // Set the camera
-    camera.position.set(this.position.x, this.position.y + 4, this.position.z + 9);
-    camera.lookAt(this.position);
+    // Calculate proper offsets to fix camera position (determined experimentally)
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    let xPosition;
+    let horizontalOffset;
+    if (this.name === 'player1') {
+      xPosition = this.position.x - 1.7;
+      horizontalOffset = -300;
+    } else {
+      xPosition = this.position.x - 2.2;
+      horizontalOffset = -400;
+    }
+    
+    // Constant offsets for camera position
+    const yPosition = this.position.y + 2.5;
+    const zPosition = this.position.z + 9;
+
+    // Set camera
+    camera.position.set(xPosition, yPosition, zPosition);
+    camera.setViewOffset(w, h, horizontalOffset, 0, w, h);
+    camera.lookAt(this.position.x, this.position.y, this.position.z);
     this.add(camera);
 
     parent.addToUpdateList(this);

@@ -9,7 +9,7 @@ class Road extends Group {
         // Geometry of the road
         const innerR = 40;
         const outerR = 60;
-        const thetaSegments =  150;
+        const thetaSegments = 150;
         const phiSegments = 1;
         const thetaStart = 0;
         const thetaEnd = Math.PI * 2.0;

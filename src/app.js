@@ -52,21 +52,21 @@ const onAnimationFrameHandler = (timeStamp) => {
     // get screen width and height
     var w = window.innerWidth;
     var h = window.innerHeight;
-
-    // clear renderer
+    
+    // clear renderer 
     renderer.setScissorTest(false);
     renderer.clear(true, true);
     renderer.setScissorTest(true);
 
     // render for second player (left)
     renderer.setScissor(1, 1, w/2 - 2, h - 2);
-    renderer.setViewport(1, 1, w/2 - 2, h - 2);
+    renderer.setViewport(1, 1, w/2 - 2, h - 2); 
     renderer.render(scene, camera1);
 
-    // render for first player (right)
+    // render for first player (right) 
     renderer.setScissor(w/2 + 1, 1, w/2 - 2, h - 2);
     renderer.setViewport(w/2 + 1, 1, w/2 - 2, h - 2);
-    renderer.render(scene, camera2);
+    renderer.render(scene, camera2);  
 
     // update scene
     scene.update && scene.update(timeStamp);

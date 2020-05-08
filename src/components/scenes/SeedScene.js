@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, CubeTextureLoader, Vector3, Raycaster } from 'three';
-import { Flower, Road, Player } from 'objects';
+import { Scene, CubeTextureLoader, Vector3, Raycaster } from 'three';
+import { Road, Player } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
@@ -26,19 +26,18 @@ class SeedScene extends Scene {
 
         // Calculate starting positons of players
         const roadParams = this.road.geometry.parameters;
-        const iR = roadParams.innerRadius;
-        const oR = roadParams.outerRadius;
-        const p1 = new Vector3(1.75, 0.01, 0);
-        const p2 = new Vector3(2, 0.01, 0);
+        const p1 = new Vector3(1.90, 0.01, 0);
+        const p2 = new Vector3(2.13, 0.01, 0);
 
         // Create Players
-        const player = new Player(this, camera1, "player1", p1);
+        const player1 = new Player(this, camera1, "player1", p1);
         const player2 = new Player(this, camera2, "player2", p2);
-        this.players = [player, player2];
+        //debugger;
+        this.players = [player1, player2];
         this.collideableObjects = [];
 
         // add meshes to scene
-        this.add(lights, road, player, player2, player.box, player2.box);
+        this.add(lights, road, player1, player2, player1.box, player2.box);
     }
 
     addToUpdateList(object) {
