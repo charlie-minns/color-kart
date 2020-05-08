@@ -8,7 +8,7 @@
  */
 import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
 import { SeedScene } from 'scenes';
-import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).wav';
+import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
 
 
 // Initialize renderer
@@ -22,22 +22,20 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
-// Global variables for ShaderToy
+// Global variables for ShaderToy Material of Road
 global.uniforms = {
     iTime: { value: 0 },
     iResolution:  { value: new Vector3(canvas.width, canvas.height, 1) },
 };
 
-// Initialize core ThreeJS components
-const camera = new PerspectiveCamera();
-// Add camera for second player
+// Initialize cameras for both players and the scene
+const camera1 = new PerspectiveCamera();
 const camera2 = new PerspectiveCamera();
-// Create scene
-const scene = new SeedScene(camera, camera2);
+const scene = new SeedScene(camera1, camera2);
 
-// Create an AudioListener and add it to the camera
+// Create an AudioListener for the background music
 const listener = new AudioListener();
-camera.add(listener);
+camera1.add(listener);
 
 // Load music and set it as the Audio object's buffer
 const backgroundMusic = new Audio(listener);
@@ -63,12 +61,12 @@ const onAnimationFrameHandler = (timeStamp) => {
     // render for second player (left)
     renderer.setScissor(1, 1, w/2 - 2, h - 2);
     renderer.setViewport(1, 1, w/2 - 2, h - 2);
-    renderer.render(scene, camera2);
+    renderer.render(scene, camera1);
 
     // render for first player (right)
     renderer.setScissor(w/2 + 1, 1, w/2 - 2, h - 2);
     renderer.setViewport(w/2 + 1, 1, w/2 - 2, h - 2);
-    renderer.render(scene, camera);
+    renderer.render(scene, camera2);
 
     // update scene
     scene.update && scene.update(timeStamp);
@@ -86,8 +84,8 @@ const windowResizeHandler = () => {
     const { innerHeight, innerWidth } = window;
     renderer.setSize(innerWidth, innerHeight);
 
-    camera.aspect = innerWidth / innerHeight / 2;
-    camera.updateProjectionMatrix();
+    camera1.aspect = innerWidth / innerHeight / 2;
+    camera1.updateProjectionMatrix();
 
     camera2.aspect = innerWidth / innerHeight / 2;
     camera2.updateProjectionMatrix();

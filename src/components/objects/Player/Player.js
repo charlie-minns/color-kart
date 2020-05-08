@@ -1,12 +1,10 @@
-import { Vector3, Face3, Matrix4, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4 } from 'three';
+import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4 } from 'three';
 import { Controller } from 'controllers';
-import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2.js';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
-import { MtlObjBridge } from 'three/examples/jsm/loaders/obj2/bridge/MtlObjBridge.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
-import MAT from './Standard Kart.mtl';
-import MODEL from './Standard Kart.obj';
+import MARIO from './Red Kart.glb';
+import LUIGI from './Green Kart.glb';
+
 
 
 class Player extends Group {
@@ -17,7 +15,7 @@ class Player extends Group {
     this.speed = 0;         // current speed
     this.topSpeed = 10;     // how fast the player can go
     this.mass = 1;          // weight of the kart
-    this.steering = 0.05;    // how efficient steering of kart is (in radians)
+    this.steering = 0.03;   // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
     this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
@@ -26,53 +24,28 @@ class Player extends Group {
     this.keys = {};         // keys that are pressed
 
     // cube around kart to detect collisions
-    var cube = new CubeGeometry(3, 2, 6);
+    var cube = new CubeGeometry(1.5, 1, 3);
     var wireMaterial = new MeshBasicMaterial(
       {color: 0xff0000, transparent:true, opacity:0.0});
     var box = new Mesh(cube, wireMaterial);
-	  box.position.set(pos.x, pos.y+0.5, pos.z);
+	  box.position.set(pos.x, pos.y+0.25, pos.z);
     box.rotation.set(0, 0, 0);
     this.box = box;
     
-    /* Load object - Piazza Post @527 (Still not working)
-    const mtlLoader = new MTLLoader();
-    mtlLoader.load(MAT, (material) => {
-      //debugger;
-      //material.preload();
-      //debugger;
-      const loader = new OBJLoader2();
-      const materials = MtlObjBridge.addMaterialsFromMtlLoader(material);
-      
-      loader.addMaterials(materials);
-      loader.load(MODEL, (obj) => {
-        obj.rotateY(Math.PI); // Roate to correct orientation
-        this.add(obj);
-      });
-    });
-    */
+    // Determine which object to load
+    let model;
+    if (this.name === 'player1') {
+      model = MARIO;
+    } else {
+      model = LUIGI;
+    }
 
-    // Three JS Tutorial
-    const mtlLoader = new MTLLoader();
-    mtlLoader.load(MAT, (material) => {
-      const objLoader = new OBJLoader2();
-      const materials = MtlObjBridge.addMaterialsFromMtlLoader(material);
-      objLoader.addMaterials(materials);
-      objLoader.load(MODEL, (obj) => {
-        obj.rotateY(Math.PI); // Roate to correct orientation
-        this.add(obj);
-      });
-    });
-    
-    
-    /* Load object
+    // Load object
     const loader = new GLTFLoader();
-    loader.setResourcePath('/src/components/objects/Player/');
-    //this.name = 'flower';
-    loader.load(MODEL, (gltf) => {
-      gltf.rotateY(Math.PI); // Roate to correct orientation\
+    loader.load(model, (gltf) => {
+      gltf.scene.rotateY(Math.PI); // Roate to correct orientation
       this.add(gltf.scene);
     });
-    */
 
     // Set the camera
     camera.position.set(this.position.x, this.position.y + 4, this.position.z + 9);
@@ -86,7 +59,7 @@ class Player extends Group {
   updateBox() {
     var pos = this.position;
     var r = this.rotation;
-    this.box.position.set(pos.x, pos.y+0.5, pos.z);
+    this.box.position.set(pos.x, pos.y+0.25, pos.z);
     this.box.rotation.set(r.x, r.y, r.z);
   }
 
@@ -131,7 +104,7 @@ class Player extends Group {
     var theta = this.rotation.y;
     var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
     if (normal) f.add(normal);
-    f.multiplyScalar(20*this.mass);
+    f.multiplyScalar(5*this.mass);
     this.addForce(f);
   }
 

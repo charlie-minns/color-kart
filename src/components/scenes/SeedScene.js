@@ -5,7 +5,7 @@ import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
 class SeedScene extends Scene {
-    constructor(camera, camera2) {
+    constructor(camera1, camera2) {
         // Call parent Scene() constructor
         super();
 
@@ -19,14 +19,21 @@ class SeedScene extends Scene {
         const texture = cubeLoader.load([MAT, MAT, MAT, MAT, MAT, MAT]);
         this.background = texture;
 
-        // Create meshes to scene
+        // Create Road
         const lights = new BasicLights();
-        var p1 = new Vector3(1.5, 0.01, 1);
-        var p2 = new Vector3(2, 0.01, 1);
-        const player = new Player(this, camera, "player1", p1);
-        const player2 = new Player(this, camera2, "player2", p2);
         const road = new Road(this);
         this.road = road;
+
+        // Calculate starting positons of players
+        const roadParams = this.road.geometry.parameters;
+        const iR = roadParams.innerRadius;
+        const oR = roadParams.outerRadius;
+        const p1 = new Vector3(1.75, 0.01, 0);
+        const p2 = new Vector3(2, 0.01, 0);
+
+        // Create Players
+        const player = new Player(this, camera1, "player1", p1);
+        const player2 = new Player(this, camera2, "player2", p2);
         this.players = [player, player2];
         this.collideableObjects = [];
 
