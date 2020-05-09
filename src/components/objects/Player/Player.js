@@ -8,7 +8,7 @@ import LUIGI from './Green Kart.glb';
 class Player extends Group {
   constructor(parent, camera, name, pos) {
     super();
-
+    
     this.scene = parent;
     this.name = name;
     this.speed = 0;         // current speed
@@ -22,15 +22,15 @@ class Player extends Group {
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
-
+   
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
     var wireMaterial = new MeshBasicMaterial({color: 0xff0000, transparent:true, opacity:0.0});
     var box = new Mesh(cube, wireMaterial);
 	  box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     box.rotation.set(0, 0, 0);
-    this.box = box;
-
+    this.box = box; 
+    
     // Determine which object to load
     let model;
     if (this.name === 'player1') {
@@ -38,7 +38,7 @@ class Player extends Group {
     } else {
       model = LUIGI;
     }
-
+    
     // Load object
     const loader = new GLTFLoader();
     loader.load(model, (gltf) => {
@@ -152,6 +152,7 @@ class Player extends Group {
 
   // update the players attributes
   update(timeStamp) {
+    //return;
     this.controller.apply();
 
     var deltaT = timeStamp % 100;
