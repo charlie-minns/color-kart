@@ -23,11 +23,9 @@ class SeedScene extends Scene {
         const lights = new BasicLights();
         const road = new Road(this);
         this.road = road;
-        this.innerEdge = road.innerEdge;
-        this.outerEdge = road.outerEdge;
+        this.walls = road.walls;
 
         // Calculate starting positons of players
-        const roadParams = this.road.geometry.parameters;
         const p1 = new Vector3(1.90, 0.01, 0.25);
         const p2 = new Vector3(2.13, 0.01, 0.2);
 
@@ -35,7 +33,7 @@ class SeedScene extends Scene {
         const player1 = new Player(this, camera1, "player1", p1, road);
         const player2 = new Player(this, camera2, "player2", p2, road);
         this.players = [player1, player2];
-        this.collideableObjects = [this.innerEdge, this.outerEdge];
+        this.collideableObjects = [this.walls];
 
         // Create the lap counters for the players
         this.createLapCounter(player1);
