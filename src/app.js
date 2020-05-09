@@ -44,7 +44,7 @@ audioLoader.load( MUSIC, function(buffer) {
 	backgroundMusic.setBuffer(buffer);
 	backgroundMusic.setLoop(true);
 	backgroundMusic.setVolume(0.1);
-	backgroundMusic.play();
+	//backgroundMusic.play();
 });
 
 // Render loop

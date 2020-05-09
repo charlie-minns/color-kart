@@ -9,12 +9,14 @@ class Player extends Group {
   constructor(parent, camera, name, pos) {
     super();
 
+    this.scene = parent;
     this.name = name;
     this.speed = 0;         // current speed
     this.topSpeed = 10;     // how fast the player can go
     this.mass = 1;          // weight of the kart
     this.steering = 0.03;   // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
+    this.reset = pos;
     this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
     this.rotation.set(0, 0, 0);
@@ -23,13 +25,12 @@ class Player extends Group {
 
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
-    var wireMaterial = new MeshBasicMaterial(
-      {color: 0xff0000, transparent:true, opacity:0.0});
+    var wireMaterial = new MeshBasicMaterial({color: 0xff0000, transparent:true, opacity:0.0});
     var box = new Mesh(cube, wireMaterial);
-	  box.position.set(pos.x, pos.y+0.25, pos.z);
+	  box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     box.rotation.set(0, 0, 0);
     this.box = box;
-    
+
     // Determine which object to load
     let model;
     if (this.name === 'player1') {
@@ -57,7 +58,7 @@ class Player extends Group {
       xPosition = this.position.x - 2.2;
       horizontalOffset = -400;
     }
-    
+
     // Constant offsets for camera position
     const yPosition = this.position.y + 2.5;
     const zPosition = this.position.z + 9;
@@ -75,7 +76,7 @@ class Player extends Group {
   updateBox() {
     var pos = this.position;
     var r = this.rotation;
-    this.box.position.set(pos.x, pos.y+0.25, pos.z);
+    this.box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     this.box.rotation.set(r.x, r.y, r.z);
   }
 
@@ -91,6 +92,7 @@ class Player extends Group {
     var pos = this.position.clone();
     var previous = this.previous;
     this.previous = pos;
+    this.previousRotation = this.rotation;
 
     // update new position
     var v = pos.clone().sub(previous).divideScalar(deltaT);
@@ -98,6 +100,7 @@ class Player extends Group {
     var vdt = v.multiplyScalar(deltaT);
     var a = this.netForce.clone().divideScalar(this.mass);
     var step = vdt.multiplyScalar(1-DAMPING).add(a.multiplyScalar(deltaT*deltaT));
+    var next = this.position.clone().add(step);
     var move = new TWEEN.Tween(this.position).to(this.position.add(step), 5);
     move.start();
 
@@ -113,15 +116,14 @@ class Player extends Group {
 
   // bounce player after colliding with something
   // bounce away from collided face normal if given
-  // this is not working very well
-  bounce(normal) {
+  bounce(normal, timeStamp) {
     var prev = this.previous;
     this.position.set(prev.x, prev.y, prev.z);
-    var theta = this.rotation.y;
-    var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
-    if (normal) f.add(normal);
-    f.multiplyScalar(5*this.mass);
-    this.addForce(f);
+    normal.normalize();
+    normal.multiplyScalar(15);
+    normal.divideScalar(this.mass);
+    this.addForce(normal);
+    this.update(timeStamp);
   }
 
   // apply force to player to move in direction it is facing
@@ -156,6 +158,11 @@ class Player extends Group {
     // not really sure how to use timeStamp to set deltaT
     this.integrate(deltaT/500);
     TWEEN.update();
+
+    // check whether the player is inbounds
+    if (!this.scene.isInbounds(this.position.clone()) && timeStamp > 3000) {
+      this.position.set(this.position.x, this.position.y, 50);
+    }
 
     // update position of bounding box
     this.updateBox();
