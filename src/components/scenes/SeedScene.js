@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, CubeTextureLoader, Vector3, Raycaster } from 'three';
-import { Road, Player } from 'objects';
+import { Road, Player, Lap } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
@@ -30,10 +30,14 @@ class SeedScene extends Scene {
         const p2 = new Vector3(2.13, 0.01, 0.2);
 
         // Create Players
-        const player1 = new Player(this, camera1, "player1", p1);
-        const player2 = new Player(this, camera2, "player2", p2);
+        const player1 = new Player(this, camera1, "player1", p1, road);
+        const player2 = new Player(this, camera2, "player2", p2, road);
         this.players = [player1, player2];
         this.collideableObjects = [this.walls];
+
+        // Create the lap counters for the players
+        this.createLapCounter(player1);
+        this.createLapCounter(player2);
 
         // add meshes to scene
         this.add(lights, road, player1, player2, player1.box, player2.box);
@@ -92,6 +96,24 @@ class SeedScene extends Scene {
       return true;
     }
 
+    // Initialize the Lap Counter for the player
+    createLapCounter(player) {
+
+      // Create the HTML div
+      this.element = document.createElement("DIV");
+      this.element.innerText = "Lap: " + player.lap;
+      document.body.appendChild(this.element);
+
+      // CSS Styling
+      this.element.style.color = "hotpink";
+      this.element.style.position = "fixed";
+      this.element.style.top = "2%";
+      if (player.name === "player1") this.element.style.left = "2%";
+      else this.element.style.left = "52%";
+      this.element.style.fontSize = "xx-large";
+      this.element.style.fontFamily = "fantasy";
+    }
+
     // update scene
     update(timeStamp) {
         const { updateList } = this.state;
@@ -110,6 +132,10 @@ class SeedScene extends Scene {
             this.checkCollisions(player, timeStamp);
           }
         }
+
+        // Update the lap counter for each player
+        document.body.getElementsByTagName("div")[0].innerText = "Lap: " + this.players[0].lap;
+        document.body.getElementsByTagName("div")[1].innerText = "Lap: " + this.players[1].lap;
     }
 }
 
