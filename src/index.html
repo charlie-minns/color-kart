@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Colorful Kart Racing</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="canvas" width="600" height="700"></canvas>
+<button type="button" id="start" onclick="initialize()">Play</button>
+<script>
+
+  var startBtn = document.getElementById('start');
+
+  function initialize() {
+    startBtn.style.display = 'none';
+    var app = document.getElementById('app');
+    console.log(app.src);
+  }
+</script>
+</body>
+</html>

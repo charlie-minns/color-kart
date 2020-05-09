@@ -10,6 +10,7 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
 import { SeedScene } from 'scenes';
 import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
+//import { Stats } from 'stats.js';
 
 // Initialize renderer
 const renderer = new WebGLRenderer({ antialias: true });
@@ -29,8 +30,8 @@ global.uniforms = {
 };
 
 // Initialize cameras for both players and the scene
-const camera1 = new PerspectiveCamera();
-const camera2 = new PerspectiveCamera();
+const camera1 = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 150);
+const camera2 = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 150);
 const scene = new SeedScene(camera1, camera2);
 
 // Create an AudioListener for the background music
@@ -54,6 +55,7 @@ const main = () => {
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
+
     // get screen width and height
     var w = window.innerWidth;
     var h = window.innerHeight;
@@ -95,5 +97,6 @@ const windowResizeHandler = () => {
     camera2.updateProjectionMatrix();
 };
 
+main();
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);

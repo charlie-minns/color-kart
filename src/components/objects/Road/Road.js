@@ -1,4 +1,7 @@
-import { Group, Shape, TorusGeometry, RingBufferGeometry, MeshBasicMaterial, Mesh, Scene, ShaderMaterial } from 'three';
+import { Group, RingBufferGeometry, TorusBufferGeometry, MeshBasicMaterial, MeshToonMaterial, MeshNormalMaterial, Mesh, ShaderMaterial, TextureLoader, PlaneBufferGeometry } from 'three';
+import { RepeatWrapping, NearestFilter, DoubleSide } from 'three';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import MAT from './checkerboard.jpg';
 
 class Road extends Group {
     constructor(parent) {
@@ -12,7 +15,7 @@ class Road extends Group {
         this.innerR = innerR;
         this.outerR = outerR;
         const tube = 1;
-        const thetaSegments =  150;
+        const thetaSegments =  16;
         const phiSegments = 1;
         const thetaStart = 0;
         const thetaEnd = Math.PI * 2.0;
@@ -54,21 +57,52 @@ class Road extends Group {
             uniforms,
         });
 
-        // geometry for the sides of the road
-        var mat = new MeshBasicMaterial({color: 0x432355});
-        var innerEdgeGeometry = new TorusGeometry(innerR+tube/2, tube, 50, 50);
-        var innerEdge = new Mesh(innerEdgeGeometry, mat);
-        innerEdge.rotation.x = Math.PI/2;
-        this.innerEdge = innerEdge;
-        var outerEdgeGeometry = new TorusGeometry(outerR+tube/2, tube, 50, 50);
-        var outerEdge = new Mesh(outerEdgeGeometry, mat);
-        outerEdge.rotation.x = Math.PI/2;
-        this.outerEdge = outerEdge;
-        parent.add(innerEdge, outerEdge);
-
         // Create road
         const road = new Mesh(roadGeometry, roadMaterial);
         parent.add(road);
+
+        // Create walls
+        // geometry for the sides of the road
+        const geometries = [];
+
+        const mat = new MeshNormalMaterial(
+            {color: 0x432355}
+        );
+        const innerEdgeGeometry = new TorusBufferGeometry(innerR + tube / 2, tube, 10, 30);
+        const outerEdgeGeometry = new TorusBufferGeometry(outerR + tube / 2, tube, 10, 30);
+        geometries.push(innerEdgeGeometry, outerEdgeGeometry);
+
+        // Merge wall geometries
+        const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
+        const mergedMesh = new Mesh(mergedGeometry, mat);
+        mergedMesh.rotation.x = Math.PI / 2;
+        this.walls = mergedMesh;
+        parent.add(mergedMesh);
+
+        // Create start strip - modified code from Three.js Tutorial (Lights)
+        // https://threejsfundamentals.org/threejs/lessons/threejs-lights.html
+        const planeWidth = 20;
+        const planeHeight = 2;
+ 
+        const loader = new TextureLoader();
+        const texture = loader.load(MAT);
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        texture.magFilter = NearestFilter;
+
+        const repeats = planeWidth / 2;
+        texture.repeat.set(repeats, 1);
+
+        const planeGeo = new PlaneBufferGeometry(planeWidth, planeHeight);
+        const planeMat = new MeshBasicMaterial({
+            map: texture,
+            side: DoubleSide,
+        });
+
+        const mesh = new Mesh(planeGeo, planeMat);
+        mesh.rotation.x = Math.PI / 2;
+        mesh.position.set(50, 0.001, 0);
+        parent.add(mesh);
     }
 }
 
