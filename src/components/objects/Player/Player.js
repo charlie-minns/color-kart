@@ -1,4 +1,4 @@
-import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial } from 'three';
+import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Box3 } from 'three';
 import { Controller } from 'controllers';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
@@ -6,7 +6,7 @@ import MARIO from './Red Kart.glb';
 import LUIGI from './Green Kart.glb';
 
 class Player extends Group {
-  constructor(parent, camera, name, pos) {
+  constructor(parent, camera, name, pos, road) {
     super();
 
     this.scene = parent;
@@ -22,6 +22,9 @@ class Player extends Group {
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
+    this.road = road;       // The road the player is racing on
+    this.lap = 1;           // lap number that the player is on
+    this.distInLap = 0.0;   // How far have they drove so far this lap?
 
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
@@ -78,6 +81,33 @@ class Player extends Group {
     var r = this.rotation;
     this.box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     this.box.rotation.set(r.x, r.y, r.z);
+  }
+
+  // Updates the lap number that the player is on
+  updateLap() {
+
+    // Establish the distance threshold
+    let DIST_THRESHOLD = 0.75 * Math.PI * this.road.innerR * 2;
+
+    // Return if player has not drove enough to get a new lap
+    if (this.distInLap < DIST_THRESHOLD) return;
+
+    // Check if player has hit the "start line" box
+    // If yes, update lap count and refresh distance for next lap
+    if (this.isOnStartLine()) {
+      this.lap++;
+      this.distInLap = 0.0;
+    }
+  }
+
+  // Return true if the player is on the start line
+  isOnStartLine() {
+
+    // Establish the bounding box for the start line
+    let min = new Vector3(this.road.innerR, -0.5, -1);
+    let max = new Vector3(this.road.outerR, 0.5, 1);
+    let startLine = new Box3(min, max);
+    return startLine.containsPoint(this.position);
   }
 
   setSpeed(speed) {
@@ -166,6 +196,12 @@ class Player extends Group {
 
     // update position of bounding box
     this.updateBox();
+
+    // Update the distance travelled for this lap
+    this.distInLap += this.position.distanceTo(this.previous);
+
+    // Update the lap number for the player
+    this.updateLap();
   }
 }
 
