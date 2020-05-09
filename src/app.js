@@ -6,10 +6,10 @@
  * handles window resizes.
  *
  */
+
 import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
 import { SeedScene } from 'scenes';
 import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
-
 
 // Initialize renderer
 const renderer = new WebGLRenderer({ antialias: true });
@@ -47,26 +47,31 @@ audioLoader.load( MUSIC, function(buffer) {
 	//backgroundMusic.play();
 });
 
+// start game
+const main = () => {
+  window.requestAnimationFrame(onAnimationFrameHandler);
+}
+
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     // get screen width and height
     var w = window.innerWidth;
     var h = window.innerHeight;
-    
-    // clear renderer 
+
+    // clear renderer
     renderer.setScissorTest(false);
     renderer.clear(true, true);
     renderer.setScissorTest(true);
 
     // render for second player (left)
     renderer.setScissor(1, 1, w/2 - 2, h - 2);
-    renderer.setViewport(1, 1, w/2 - 2, h - 2); 
+    renderer.setViewport(1, 1, w/2 - 2, h - 2);
     renderer.render(scene, camera1);
 
-    // render for first player (right) 
+    // render for first player (right)
     renderer.setScissor(w/2 + 1, 1, w/2 - 2, h - 2);
     renderer.setViewport(w/2 + 1, 1, w/2 - 2, h - 2);
-    renderer.render(scene, camera2);  
+    renderer.render(scene, camera2);
 
     // update scene
     scene.update && scene.update(timeStamp);
@@ -77,7 +82,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     //
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
-window.requestAnimationFrame(onAnimationFrameHandler);
 
 // Resize Handler
 const windowResizeHandler = () => {
@@ -90,5 +94,6 @@ const windowResizeHandler = () => {
     camera2.aspect = innerWidth / innerHeight / 2;
     camera2.updateProjectionMatrix();
 };
+
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);

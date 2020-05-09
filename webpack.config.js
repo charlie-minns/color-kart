@@ -47,10 +47,13 @@ module.exports = {
             lights$: path.resolve(__dirname, 'src/components/lights'),
             objects$: path.resolve(__dirname, 'src/components/objects'),
             scenes$: path.resolve(__dirname, 'src/components/scenes'),
-            models$: path.resolve(__dirname, 'src/models'),
         },
     },
     plugins: [
-        new HtmlWebpackPlugin({ title: pkg.title, favicon: 'src/favicon.ico' }),
+      new HtmlWebpackPlugin({
+        title: pkg.title,
+        favicon: 'src/favicon.ico',
+        template: 'src/index.html'
+      }),
     ],
 };
