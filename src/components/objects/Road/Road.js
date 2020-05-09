@@ -9,6 +9,8 @@ class Road extends Group {
         // Geometry of the road
         const innerR = 40;
         const outerR = 60;
+        this.innerR = innerR;
+        this.outerR = outerR;
         const tube = 1;
         const thetaSegments =  150;
         const phiSegments = 1;

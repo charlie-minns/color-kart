@@ -1,26 +1,25 @@
-import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Vector4, Euler } from 'three';
+import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial } from 'three';
 import { Controller } from 'controllers';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import MARIO from './Red Kart.glb';
 import LUIGI from './Green Kart.glb';
 
-
-
 class Player extends Group {
   constructor(parent, camera, name, pos) {
     super();
 
+    this.scene = parent;
     this.name = name;
     this.speed = 0;         // current speed
     this.topSpeed = 10;     // how fast the player can go
     this.mass = 1;          // weight of the kart
     this.steering = 0.03;   // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
+    this.reset = pos;
     this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
     this.previous = new Vector3(0, 0, 0);
     this.rotation.set(0, 0, 0);
-    this.previousRotation = new Euler(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
 
@@ -47,9 +46,27 @@ class Player extends Group {
       this.add(gltf.scene);
     });
 
-    // Set the camera
-    camera.position.set(this.position.x, this.position.y + 4, this.position.z + 9);
-    camera.lookAt(this.position);
+    // Calculate proper offsets to fix camera position (determined experimentally)
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    let xPosition;
+    let horizontalOffset;
+    if (this.name === 'player1') {
+      xPosition = this.position.x - 1.7;
+      horizontalOffset = -300;
+    } else {
+      xPosition = this.position.x - 2.2;
+      horizontalOffset = -400;
+    }
+
+    // Constant offsets for camera position
+    const yPosition = this.position.y + 2.5;
+    const zPosition = this.position.z + 9;
+
+    // Set camera
+    camera.position.set(xPosition, yPosition, zPosition);
+    camera.setViewOffset(w, h, horizontalOffset, 0, w, h);
+    camera.lookAt(this.position.x, this.position.y, this.position.z);
     this.add(camera);
 
     parent.addToUpdateList(this);
@@ -83,6 +100,7 @@ class Player extends Group {
     var vdt = v.multiplyScalar(deltaT);
     var a = this.netForce.clone().divideScalar(this.mass);
     var step = vdt.multiplyScalar(1-DAMPING).add(a.multiplyScalar(deltaT*deltaT));
+    var next = this.position.clone().add(step);
     var move = new TWEEN.Tween(this.position).to(this.position.add(step), 5);
     move.start();
 
@@ -102,7 +120,7 @@ class Player extends Group {
     var prev = this.previous;
     this.position.set(prev.x, prev.y, prev.z);
     normal.normalize();
-    normal.multiplyScalar(5);
+    normal.multiplyScalar(15);
     normal.divideScalar(this.mass);
     this.addForce(normal);
     this.update(timeStamp);
@@ -140,6 +158,11 @@ class Player extends Group {
     // not really sure how to use timeStamp to set deltaT
     this.integrate(deltaT/500);
     TWEEN.update();
+
+    // check whether the player is inbounds
+    if (!this.scene.isInbounds(this.position.clone()) && timeStamp > 3000) {
+      this.position.set(this.position.x, this.position.y, 50);
+    }
 
     // update position of bounding box
     this.updateBox();

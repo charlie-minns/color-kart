@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, CubeTextureLoader, Vector3, Raycaster } from 'three';
-import { Flower, Road, Player } from 'objects';
+import { Scene, CubeTextureLoader, Vector3, Raycaster } from 'three';
+import { Road, Player } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
@@ -28,19 +28,17 @@ class SeedScene extends Scene {
 
         // Calculate starting positons of players
         const roadParams = this.road.geometry.parameters;
-        const iR = roadParams.innerRadius;
-        const oR = roadParams.outerRadius;
-        const p1 = new Vector3(1.9, 0.01, 0.05);
-        const p2 = new Vector3(2.1, 0.01, 0);
+        const p1 = new Vector3(1.90, 0.01, 0);
+        const p2 = new Vector3(2.13, 0.01, 0);
 
         // Create Players
-        const player = new Player(this, camera1, "player1", p1);
+        const player1 = new Player(this, camera1, "player1", p1);
         const player2 = new Player(this, camera2, "player2", p2);
-        this.players = [player, player2];
+        this.players = [player1, player2];
         this.collideableObjects = [this.innerEdge, this.outerEdge];
 
         // add meshes to scene
-        this.add(lights, road, player, player2, player.box, player2.box);
+        this.add(lights, road, player1, player2, player1.box, player2.box);
     }
 
     addToUpdateList(object) {
@@ -83,9 +81,17 @@ class SeedScene extends Scene {
           collisions[0].face.normal.y = 0;
           var norm = collisions[0].face.normal;
           player1.bounce(norm.clone(), timeStamp);
-          player2.bounce(norm.clone().negate(), timeStamp);
         }
     	}
+    }
+
+    // check whether the player is within the road boundaries
+    isInbounds(pos) {
+      const EPS = 1;
+      pos.y = 0;
+      if (pos.length() - this.road.innerR < EPS) return false;
+      if (this.road.outerR - pos.length() < EPS) return false;
+      return true;
     }
 
     // update scene
@@ -100,11 +106,12 @@ class SeedScene extends Scene {
         // checking for collisions
         for (var player of this.players) {
           // check for collisions
-          if (timeStamp > 3000) this.checkCollisions(player, timeStamp);
+          if (timeStamp > 3000) {
+            this.checkPlayer(this.players[0], this.players[1], timeStamp);
+            this.checkPlayer(this.players[1], this.players[0], timeStamp);
+            this.checkCollisions(player, timeStamp);
+          }
         }
-
-        // checking for collisions between players
-        if (timeStamp > 3000) this.checkPlayer(this.players[0], this.players[1], timeStamp);
     }
 }
 
