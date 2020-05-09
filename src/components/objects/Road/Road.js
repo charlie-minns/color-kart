@@ -1,4 +1,6 @@
-import { Group, RingBufferGeometry, MeshBasicMaterial, Mesh, Scene, ShaderMaterial } from 'three';
+import { Group, RingBufferGeometry, MeshBasicMaterial, MeshPhongMaterial, Mesh, Scene, ShaderMaterial, TextureLoader, PlaneBufferGeometry } from 'three';
+import { RepeatWrapping, NearestFilter, DoubleSide } from 'three';
+import MAT from './checkerboard.jpg';
 
 class Road extends Group {
     constructor(parent) {
@@ -55,6 +57,31 @@ class Road extends Group {
         // Create road
         const road = new Mesh(roadGeometry, roadMaterial);
         parent.add(road);
+
+        // Create start strip - modified code from Three.js Tutorial (Lights)
+        // https://threejsfundamentals.org/threejs/lessons/threejs-lights.html
+        const planeWidth = 20;
+        const planeHeight = 2;
+ 
+        const loader = new TextureLoader();
+        const texture = loader.load(MAT);
+        texture.wrapS = RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        texture.magFilter = NearestFilter;
+
+        const repeats = Math.ceil(planeWidth) / 2;
+        texture.repeat.set(repeats, 1);
+
+        const planeGeo = new PlaneBufferGeometry(planeWidth, planeHeight);
+        const planeMat = new MeshPhongMaterial({
+            map: texture,
+            side: DoubleSide,
+        });
+
+        const mesh = new Mesh(planeGeo, planeMat);
+        mesh.rotation.x = Math.PI * 0.5;
+        mesh.position.set(49.99, 0.001, 0);
+        parent.add(mesh);
     }
 }
 
