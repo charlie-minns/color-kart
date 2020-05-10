@@ -70,6 +70,8 @@ class Road extends Group {
         );
         const innerEdgeGeometry = new TorusBufferGeometry(innerR + tube / 2, tube, 10, 30);
         const outerEdgeGeometry = new TorusBufferGeometry(outerR + tube / 2, tube, 10, 30);
+        innerEdgeGeometry.name = "inner";
+        outerEdgeGeometry.name = "outer";
         geometries.push(innerEdgeGeometry, outerEdgeGeometry);
 
         // Merge wall geometries

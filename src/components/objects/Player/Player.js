@@ -104,7 +104,6 @@ class Player extends Group {
 
   // Return true if the player is on the start line
   isOnStartLine() {
-
     // Establish the bounding box for the start line
     let min = new Vector3(this.road.innerR, -0.5, -1);
     let max = new Vector3(this.road.outerR, 0.5, 1);
@@ -146,15 +145,41 @@ class Player extends Group {
     this.netForce.add(f);
   }
 
-  // bounce player after colliding with something
-  // bounce away from collided face normal if given
+  // bounce player off other player
   bounce(normal, timeStamp) {
     var prev = this.previous;
     this.position.set(prev.x, prev.y, prev.z);
-    normal.normalize();
     normal.multiplyScalar(15);
     normal.divideScalar(this.mass);
     this.addForce(normal);
+    this.update(timeStamp);
+  }
+
+  // find the radial distance from the map centre
+  calculateRadius() {
+    return Math.sqrt(Math.pow(this.position.x, 2) + Math.pow(this.position.z, 2));
+  }
+
+  // bounce player after colliding with road
+  // bounce away from collided face normal if given
+  // using normal doesn't work for full track- bouncing towards centre
+  roadBounce(normal, timeStamp) {
+    var prev = this.previous;
+    this.position.set(prev.x, prev.y, prev.z);
+    var innerR = this.road.innerR;
+    var outerR = this.road.outerR;
+    var norm = this.position.clone().normalize();
+    var innerN = norm.clone().multiplyScalar(innerR);
+    var outerN = norm.clone().multiplyScalar(outerR);
+    var cen = innerN.clone().add(outerN).divideScalar(2);
+    var r = this.calculateRadius();
+    var cenR = (innerR + outerR)/2;
+    var f;
+    if (r < cenR) f = cen.sub(innerN);
+    else f = cen.sub(outerN);
+    f.normalize();
+    f.multiplyScalar(15);
+    this.addForce(f);
     this.update(timeStamp);
   }
 
@@ -194,6 +219,7 @@ class Player extends Group {
     // check whether the player is inbounds
     if (!this.scene.isInbounds(this.position.clone()) && timeStamp > 3000) {
       this.position.set(this.reset.x, this.reset.y, this.reset.z);
+      this.distInLap = 0.0;
     }
 
     // update position of bounding box

@@ -69,7 +69,7 @@ class SeedScene extends Scene {
     		var collisions = ray.intersectObjects(this.collideableObjects);
     		if (collisions.length > 0 && collisions[0].distance < dv.length()) {
           collisions[0].face.normal.y = 0;
-          player.bounce(collisions[0].face.normal, timeStamp);
+          player.roadBounce(collisions[0].face.normal.clone(), timeStamp);
         }
     	}
     }
@@ -128,7 +128,7 @@ class SeedScene extends Scene {
       if (name == "") name = winner.name;
 
       console.log(name + " has won!");
-      // can we somehow call 'app.main()' to restart? Add a button to trigger? 
+      // can we somehow call 'app.main()' to restart? Add a button to trigger?
     }
 
     // update scene
