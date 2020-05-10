@@ -26,8 +26,14 @@ class SeedScene extends Scene {
         this.walls = road.walls;
 
         // Calculate starting positons of players
-        const p1 = new Vector3(1.90, 0.01, 0.25);
-        const p2 = new Vector3(2.13, 0.01, 0.2);
+        const p1 = road.start.position.clone();
+        const p2 = road.start.position.clone();
+        p1.x -= 5;
+        p1.y += 0.1;
+        p1.z += 5;
+        p2.x += 5;
+        p2.y += 0.1;
+        p2.z += 2.5;
 
         // Create Players
         const player1 = new Player(this, camera1, "player1", p1, road);
@@ -38,6 +44,7 @@ class SeedScene extends Scene {
         // Create the lap counters for the players
         this.createLapCounter(player1);
         this.createLapCounter(player2);
+        this.nlaps = 5;
 
         // add meshes to scene
         this.add(lights, road, player1, player2, player1.box, player2.box);
@@ -98,10 +105,9 @@ class SeedScene extends Scene {
 
     // Initialize the Lap Counter for the player
     createLapCounter(player) {
-
       // Create the HTML div
       this.element = document.createElement("DIV");
-      this.element.innerText = "Lap: " + player.lap;
+      //this.element.innerText = "Lap: " + player.lap + "/" + this.nlaps;
       document.body.appendChild(this.element);
 
       // CSS Styling
@@ -112,6 +118,17 @@ class SeedScene extends Scene {
       else this.element.style.left = "52%";
       this.element.style.fontSize = "xx-large";
       this.element.style.fontFamily = "fantasy";
+    }
+
+    // End the game- player won the game
+    endGame(winner) {
+      var name;
+      if (winner.name == "player1") name = document.getElementById("name1").value;
+      else name = document.getElementById("name2").value;
+      if (name == "") name = winner.name;
+
+      console.log(name + " has won!");
+      // can we somehow call 'app.main()' to restart? Add a button to trigger? 
     }
 
     // update scene
@@ -133,9 +150,14 @@ class SeedScene extends Scene {
           }
         }
 
+        // Check whether a player has finished, pass the winner
+        if (this.players[0].lap == this.nlaps+1) this.endGame(this.players[0]);
+        if (this.players[1].lap == this.nlaps+1) this.endGame(this.players[1]);
+
+
         // Update the lap counter for each player
-        document.body.getElementsByTagName("div")[0].innerText = "Lap: " + this.players[0].lap;
-        document.body.getElementsByTagName("div")[1].innerText = "Lap: " + this.players[1].lap;
+        document.body.getElementsByTagName("div")[0].innerText = "Lap: " + this.players[0].lap + "/" + this.nlaps;
+        document.body.getElementsByTagName("div")[1].innerText = "Lap: " + this.players[1].lap + "/" + this.nlaps;
     }
 }
 

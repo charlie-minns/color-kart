@@ -12,12 +12,39 @@ import { SeedScene } from 'scenes';
 import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
 //import { Stats } from 'stats.js';
 
+// set the menu style
+const setCanvas = (menu) => {
+  menu.width = window.innerWidth;
+  menu.height = window.innerHeight;
+  var ctx = menu.getContext('2d');
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(0, 0, menu.width, menu.height);
+  var imgPath = './components/scenes/galaxy.jpg';
+  var imgObj = new Image();
+  imgObj.src = imgPath;
+  ctx.drawImage(imgObj, 0, 0);
+
+  // add title
+  var gradient = ctx.createLinearGradient(0, 0, menu.width, 0);
+  gradient.addColorStop("0", "magenta");
+  gradient.addColorStop("0.5", "green");
+  gradient.addColorStop("1.0", "red");
+  ctx.font = "80px Georgia";
+  ctx.fillStyle = gradient;
+  ctx.strokeStyle = 'black';
+  ctx.fillText("Colorful Kart Racing", menu.width/4, menu.height/5);
+  ctx.strokeText("Colorful Kart Racing", menu.width/4, menu.height/5);
+}
+
 // Initialize renderer
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
-const canvas = renderer.domElement;
+var menu = document.createElement("canvas");
+setCanvas(menu);
+document.body.appendChild(menu);
+var canvas = renderer.domElement;
 canvas.style.display = 'block'; // Removes padding below canvas
 document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
@@ -49,13 +76,12 @@ audioLoader.load( MUSIC, function(buffer) {
 });
 
 // start game
-const main = () => {
+const play = () => {
   window.requestAnimationFrame(onAnimationFrameHandler);
 }
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-
     // get screen width and height
     var w = window.innerWidth;
     var h = window.innerHeight;
@@ -95,8 +121,58 @@ const windowResizeHandler = () => {
 
     camera2.aspect = innerWidth / innerHeight / 2;
     camera2.updateProjectionMatrix();
+
+    setCanvas(menu);
 };
 
-main();
+const main = function() {
+  // Create the HTML div
+  //var div = document.createElement("DIV");
+  var name1 = document.createElement("input");
+  name1.id = "name1";
+  name1.placeholder = 'Enter name of Player 1';
+  document.body.appendChild(name1);
+
+  var name2 = document.createElement("input");
+  name2.id = "name2";
+  name2.placeholder = 'Enter name of Player 2';
+  document.body.appendChild(name2);
+
+  var button = document.createElement("button");
+  button.innerHTML = 'PLAY';
+  button.onclick = function() {
+    name1.style.display = 'none';
+    name2.style.display = 'none';
+    button.style.display = 'none';
+    menu.style.display = 'none';
+    play();
+  };
+  document.body.appendChild(button);
+
+  // names CSS Styling
+  name1.style.color = "red";
+  name1.style.position = "fixed";
+  name1.style.left = "37%";
+  name1.style.top = "30%";
+  name1.style.fontSize = "xx-large";
+  name1.style.fontFamily = "fantasy";
+
+  name2.style.color = "green";
+  name2.style.position = "fixed";
+  name2.style.left = "37%";
+  name2.style.top = "40%";
+  name2.style.fontSize = "xx-large";
+  name2.style.fontFamily = "fantasy";
+
+  // button CSS Styling
+  button.style.color = "hotpink";
+  button.style.position = "fixed";
+  button.style.left = "45%";
+  button.style.top = "50%";
+  button.style.fontSize = "xx-large";
+  button.style.fontFamily = "fantasy";
+}
+
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
+main();

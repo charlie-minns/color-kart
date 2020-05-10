@@ -8,7 +8,7 @@ import LUIGI from './Green Kart.glb';
 class Player extends Group {
   constructor(parent, camera, name, pos, road) {
     super();
-    
+
     this.scene = parent;
     this.name = name;
     this.speed = 0;         // current speed
@@ -18,7 +18,7 @@ class Player extends Group {
     this.netForce = new Vector3(0, 0, 0);
     this.reset = pos;
     this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
-    this.previous = new Vector3(0, 0, 0);
+    this.previous = pos;
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
     this.keys = {};         // keys that are pressed
@@ -32,8 +32,8 @@ class Player extends Group {
     var box = new Mesh(cube, wireMaterial);
 	  box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     box.rotation.set(0, 0, 0);
-    this.box = box; 
-    
+    this.box = box;
+
     // Determine which object to load
     let model;
     if (this.name === 'player1') {
@@ -41,7 +41,7 @@ class Player extends Group {
     } else {
       model = LUIGI;
     }
-    
+
     // Load object
     const loader = new GLTFLoader();
     loader.load(model, (gltf) => {
@@ -50,26 +50,28 @@ class Player extends Group {
     });
 
     // Calculate proper offsets to fix camera position (determined experimentally)
+    /*
     const w = window.innerWidth;
     const h = window.innerHeight;
     let xPosition;
     let horizontalOffset;
     if (this.name === 'player1') {
-      xPosition = this.position.x - 1.7;
-      horizontalOffset = -300;
-    } else {
-      xPosition = this.position.x - 2.2;
+      xPosition = this.position.x;
       horizontalOffset = -400;
+    } else {
+      xPosition = this.position.x;
+      horizontalOffset = -300;
     }
+    */
 
     // Constant offsets for camera position
     const yPosition = this.position.y + 2.5;
     const zPosition = this.position.z + 9;
 
     // Set camera
-    camera.position.set(xPosition, yPosition, zPosition);
-    camera.setViewOffset(w, h, horizontalOffset, 0, w, h);
-    camera.lookAt(this.position.x, this.position.y, this.position.z);
+    camera.position.set(0, 2.5, 9);
+    //camera.setViewOffset(w, h, horizontalOffset, 0, w, h);
+    camera.lookAt(0, 0, 0);
     this.add(camera);
 
     parent.addToUpdateList(this);
@@ -85,9 +87,9 @@ class Player extends Group {
 
   // Updates the lap number that the player is on
   updateLap() {
-
     // Establish the distance threshold
-    let DIST_THRESHOLD = 0.75 * Math.PI * this.road.innerR * 2;
+    // removed 0.75 factor- smallest possible distance to complete a lap uses innerR
+    let DIST_THRESHOLD = Math.PI * this.road.innerR * 2;
 
     // Return if player has not drove enough to get a new lap
     if (this.distInLap < DIST_THRESHOLD) return;
@@ -186,13 +188,12 @@ class Player extends Group {
     this.controller.apply();
 
     var deltaT = timeStamp % 100;
-    // not really sure how to use timeStamp to set deltaT
     this.integrate(deltaT/500);
     TWEEN.update();
 
     // check whether the player is inbounds
     if (!this.scene.isInbounds(this.position.clone()) && timeStamp > 3000) {
-      this.position.set(this.position.x, this.position.y, 50);
+      this.position.set(this.reset.x, this.reset.y, this.reset.z);
     }
 
     // update position of bounding box

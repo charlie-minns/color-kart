@@ -15,7 +15,7 @@ class Road extends Group {
         this.innerR = innerR;
         this.outerR = outerR;
         const tube = 1;
-        const thetaSegments =  16;
+        const thetaSegments = 24;
         const phiSegments = 1;
         const thetaStart = 0;
         const thetaEnd = Math.PI * 2.0;
@@ -83,7 +83,7 @@ class Road extends Group {
         // https://threejsfundamentals.org/threejs/lessons/threejs-lights.html
         const planeWidth = 20;
         const planeHeight = 2;
- 
+
         const loader = new TextureLoader();
         const texture = loader.load(MAT);
         texture.wrapS = RepeatWrapping;
@@ -102,6 +102,7 @@ class Road extends Group {
         const mesh = new Mesh(planeGeo, planeMat);
         mesh.rotation.x = Math.PI / 2;
         mesh.position.set(50, 0.001, 0);
+        this.start = mesh;
         parent.add(mesh);
     }
 }
