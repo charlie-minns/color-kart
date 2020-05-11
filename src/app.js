@@ -8,7 +8,7 @@
  */
 
 import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
-import { SeedScene } from 'scenes';
+import { RacingScene } from 'scenes';
 import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
 import ENGINE from './sounds/Engine Sound.mp3';
 
@@ -59,7 +59,7 @@ global.uniforms = {
 // Initialize cameras for both players and the scene
 const camera1 = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 150);
 const camera2 = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 150);
-const scene = new SeedScene(camera1, camera2);
+const scene = new RacingScene(camera1, camera2);
 
 // Create an AudioListener for the background music
 const musicListener = new AudioListener();

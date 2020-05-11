@@ -4,7 +4,7 @@ import { Road, Player, Lap, Powerup, Overhead } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
-class SeedScene extends Scene {
+class RacingScene extends Scene {
     constructor(camera1, camera2) {
         // Call parent Scene() constructor
         super();
@@ -196,6 +196,9 @@ class SeedScene extends Scene {
 
     // update scene
     update(timeStamp) {
+        // Wait for beeps to allow movement
+        if (timeStamp < 4800) return;
+
         const { updateList } = this.state;
 
         // Call update for each object in the updateList
@@ -222,4 +225,4 @@ class SeedScene extends Scene {
     }
 }
 
-export default SeedScene;
+export default RacingScene;
