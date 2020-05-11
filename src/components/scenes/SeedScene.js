@@ -60,6 +60,9 @@ class RacingScene extends Scene {
 
         // add meshes to scene
         this.add(lights, powerup1);
+
+        // Game does not start off as ended
+        this.gameEnded = false;
     }
 
     addToUpdateList(object) {
@@ -185,13 +188,52 @@ class RacingScene extends Scene {
 
     // End the game- player won the game
     endGame(winner) {
+
+      // If the game already ended, don't keep creating things
+      if (this.gameEnded) return;
+      this.gameEnded = true;
+
+      // Grab the canvases
+      let canvases = document.body.getElementsByTagName('canvas');
+      let inGame = canvases[2];
+      let endGame = canvases[1];
+      inGame.style.display = 'none';
+      endGame.style.display = 'inline';
+
+      // Remove the lap information and any other text
+      let divs = document.body.getElementsByTagName('div');
+      for (let i = 0; i < divs.length; i++) divs[i].style.display = 'none';
+
+      // Decide the winner
       var name;
       if (winner.name == "player1") name = document.getElementById("name1").value;
       else name = document.getElementById("name2").value;
       if (name == "") name = winner.name;
 
-      console.log(name + " has won!");
-      // can we somehow call 'app.main()' to restart? Add a button to trigger?
+      // Display the winner
+      let winnerDisplay = document.createElement("div");
+      document.body.appendChild(winnerDisplay);
+      winnerDisplay.style.top = "30%";
+      winnerDisplay.style.left = "37%";
+      winnerDisplay.style.color = "white";
+      winnerDisplay.style.position = "fixed";
+      winnerDisplay.style.fontSize = "xxx-large";
+      winnerDisplay.style.fontFamily = "fantasy";
+      winnerDisplay.innerHTML = name + " wins!!";
+
+      // Create the PLAY AGAIN button that refreshes page
+      let button = document.createElement("button");
+      button.innerHTML = 'PLAY AGAIN';
+      button.onclick = function() {
+        window.location.reload();
+      };
+      document.body.appendChild(button);
+      button.style.color = "hotpink";
+      button.style.position = "fixed";
+      button.style.left = "45%";
+      button.style.top = "75%";
+      button.style.fontSize = "xx-large";
+      button.style.fontFamily = "fantasy";
     }
 
     // update scene

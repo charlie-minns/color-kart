@@ -36,14 +36,43 @@ const setCanvas = (menu) => {
   ctx.strokeText("Colorful Kart Racing", menu.width/4, menu.height/5);
 }
 
+// Set the gameOver menu (display will only show when game ends)
+const setEndGame = (gameOver) => {
+  gameOver.width = window.innerWidth;
+  gameOver.height = window.innerHeight;
+  let cntx = gameOver.getContext('2d');
+  cntx.fillStyle = 'purple';
+  cntx.fillRect(0, 0, gameOver.width, gameOver.height);
+
+  // Add the Gameover text
+  let grad = cntx.createLinearGradient(0, 0, gameOver.width, 0);
+  grad.addColorStop("0", "magenta");
+  grad.addColorStop("0.5", "green");
+  grad.addColorStop("1.0", "red");
+  cntx.font = "80px Georgia";
+  cntx.fillStyle = grad;
+  cntx.strokeStyle = 'black';
+  cntx.fillText("Game Over", gameOver.width/4, gameOver.height/5);
+  cntx.strokeText("Game Over", gameOver.width/4, gameOver.height/5);
+}
+
 // Initialize renderer
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
+
+// Create the start menu
 var menu = document.createElement("canvas");
 setCanvas(menu);
 document.body.appendChild(menu);
+
+// Create the Game Over menu
+var endGame = document.createElement("canvas");
+endGame.style.display = 'none';
+setEndGame(endGame);
+document.body.appendChild(endGame);
+
 var canvas = renderer.domElement;
 canvas.style.display = 'block'; // Removes padding below canvas
 document.body.style.margin = 0; // Removes margin around page
@@ -135,6 +164,7 @@ const windowResizeHandler = () => {
     camera2.updateProjectionMatrix();
 
     setCanvas(menu);
+    setEndGame(endGame);
 };
 
 const main = function() {
