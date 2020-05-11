@@ -10,6 +10,7 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
 import { SeedScene } from 'scenes';
 import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
+import ENGINE from './sounds/Engine Sound.mp3';
 
 // set the menu style
 const setCanvas = (menu) => {
@@ -61,16 +62,29 @@ const camera2 = new PerspectiveCamera(45, window.innerWidth / window.innerHeight
 const scene = new SeedScene(camera1, camera2);
 
 // Create an AudioListener for the background music
-const listener = new AudioListener();
-camera1.add(listener);
+const musicListener = new AudioListener();
+camera1.add(musicListener);
 
 // Load music and set it as the Audio object's buffer
-const backgroundMusic = new Audio(listener);
-const audioLoader = new AudioLoader();
-audioLoader.load( MUSIC, function(buffer) {
+const backgroundMusic = new Audio(musicListener);
+const musicLoader = new AudioLoader();
+musicLoader.load( MUSIC, function(buffer) {
 	backgroundMusic.setBuffer(buffer);
 	backgroundMusic.setLoop(true);
 	backgroundMusic.setVolume(0.1);
+});
+
+// Create an AudioListener for the first engine sound
+const engineListener = new AudioListener();
+camera2.add(engineListener);
+
+// Load sound and set it as the Audio object's buffer
+const engineSound = new Audio(engineListener);
+const engineLoader = new AudioLoader();
+engineLoader.load( ENGINE, function(buffer) {
+    engineSound.setBuffer(buffer);
+    engineSound.setLoop(true);
+    engineSound.setVolume(0.1);
 });
 
 // start game
@@ -144,6 +158,7 @@ const main = function() {
     button.style.display = 'none';
     menu.style.display = 'none';
     backgroundMusic.play(); // Play background music
+    engineSound.play();     // Play engine sound
     play();
   };
   document.body.appendChild(button);
