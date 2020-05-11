@@ -183,7 +183,7 @@ class Player extends Group {
 
     // Display power up
     var control;
-    if (this.name == "player1") control = "space";
+    if (this.name === "player1") control = "space";
     else control = "enter";
     this.scene.displayPowerup(this, power, control);
   }
@@ -210,7 +210,7 @@ class Player extends Group {
 
       // Freeze power up
       case "freeze":
-        if (this.name == "player1") player = this.scene.players[1];
+        if (this.name === "player1") player = this.scene.players[1];
         else player = this.scene.players[0];
         player.freeze = true;
         player.freezeTime = 100;
@@ -223,26 +223,27 @@ class Player extends Group {
 
       // Drop three spike traps
       case "triple spike":
-        this.scene.createSpike( new Vector3(this.position.x - 2, this.position.y, this.position.z) );
+        const vecToCenter = new Vector3().sub(this.position).normalize();
+        this.scene.createSpike( new Vector3().addVectors(vecToCenter, this.position) );
         this.scene.createSpike(this.position);
-        this.scene.createSpike( new Vector3(this.position.x + 2, this.position.y, this.position.z) );
+        this.scene.createSpike( new Vector3().addVectors(vecToCenter.clone().multiplyScalar(-1), this.position) );
         break;
 
       // Remove a lap from the other player
       case "remove lap":
-        if (this.name == "player1") this.scene.players[1].lap--;
+        if (this.name === "player1") this.scene.players[1].lap--;
         else this.scene.players[0].lap--;
         break;
 
       // Add a lap to the player
       case "add lap":
-        if (this.name == "player1") this.scene.players[0].lap++;
+        if (this.name === "player1") this.scene.players[0].lap++;
         else this.scene.players[1].lap++;
         break;
 
       // Activates reverse controls- forward becomes back, left becomes right
       case "reverse controls":
-        if (this.name == "player1") player = this.scene.players[1];
+        if (this.name === "player1") player = this.scene.players[1];
         else player = this.scene.players[0];
         player.reverse = true;
         player.reverseTime = 300;
