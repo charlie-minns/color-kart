@@ -36,6 +36,11 @@ function Controller(player) {
         if ((key == "d" || key == "D") && player.keys[key]) {
           player.steerRight();
         }
+
+        // use power up if spacebar is pressed
+        if (key == " " && player.keys[key]) {
+          player.usePowerUp();
+        }
       }
       // keys to control player2
       else {
@@ -57,6 +62,11 @@ function Controller(player) {
         // turn right if right arrow is pressed
         if (key == "ArrowRight" && player.keys[key]) {
           player.steerRight();
+        }
+
+        // use power up if enter is pressed
+        if (key == "Enter" && player.keys[key]) {
+          player.usePowerUp();
         }
       }
     }

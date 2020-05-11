@@ -12,12 +12,12 @@ class Player extends Group {
     this.scene = parent;
     this.name = name;
     this.speed = 0;         // current speed
-    this.topSpeed = 10;     // how fast the player can go
+    this.topSpeed = 2;     // how fast the player can go
     this.mass = 1;          // weight of the kart
     this.steering = 0.03;   // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
     this.reset = pos;
-    this.position.set(pos.x, pos.y, pos.z);    // default start position is (0, 0, 0) because of Group
+    this.position.set(pos.x, pos.y, pos.z);
     this.previous = pos;
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
@@ -25,6 +25,15 @@ class Player extends Group {
     this.road = road;       // The road the player is racing on
     this.lap = 1;           // lap number that the player is on
     this.distInLap = 0.0;   // How far have they drove so far this lap?
+    this.powerup = undefined; // The power up the player is holding
+    this.zoom = false;      // player's speed increases until time is up
+    this.zoomTime = 0;
+    this.freeze = false;    // player can't move until timer is up
+    this.freezeTime = 0;
+    this.spin = false;      // player does a 360
+    this.spinOrigin = 0;
+    this.reverse = false;   // reverse the controls for some time
+    this.reverseTime = 0;
 
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
@@ -33,6 +42,7 @@ class Player extends Group {
 	  box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
     box.rotation.set(0, 0, 0);
     this.box = box;
+    parent.add(box);
 
     // Determine which object to load
     let model;
@@ -49,31 +59,16 @@ class Player extends Group {
       this.add(gltf.scene);
     });
 
-    // Calculate proper offsets to fix camera position (determined experimentally)
-    /*
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    let xPosition;
-    let horizontalOffset;
-    if (this.name === 'player1') {
-      xPosition = this.position.x;
-      horizontalOffset = -400;
-    } else {
-      xPosition = this.position.x;
-      horizontalOffset = -300;
-    }
-    */
-
     // Constant offsets for camera position
     const yPosition = this.position.y + 2.5;
     const zPosition = this.position.z + 9;
 
     // Set camera
     camera.position.set(0, 2.5, 9);
-    //camera.setViewOffset(w, h, horizontalOffset, 0, w, h);
     camera.lookAt(0, 0, 0);
     this.add(camera);
 
+    parent.add(this);
     parent.addToUpdateList(this);
   }
 
@@ -112,7 +107,7 @@ class Player extends Group {
   }
 
   setSpeed(speed) {
-    this._speed = Math.max(0, Math.min(speed, this.topSpeed));
+    this.speed = Math.max(0, Math.min(speed, this.topSpeed));
   }
 
   // use verlet integration to update position depending on forces acting on kart
@@ -163,7 +158,7 @@ class Player extends Group {
   // bounce player after colliding with road
   // bounce away from collided face normal if given
   // using normal doesn't work for full track- bouncing towards centre
-  roadBounce(normal, timeStamp) {
+  roadBounce(timeStamp) {
     var prev = this.previous;
     this.position.set(prev.x, prev.y, prev.z);
     var innerR = this.road.innerR;
@@ -183,10 +178,72 @@ class Player extends Group {
     this.update(timeStamp);
   }
 
+  // Get a power up item
+  getPowerUp(power) {
+    // Don't give a power up to the player if they already have one
+    if (this.powerup !== undefined) return;
+    this.powerup = power;
+
+    // Display power up
+    var control;
+    if (this.name == "player1") control = "space";
+    else control = "enter";
+    this.scene.displayPowerup(this, power, control);
+  }
+
+  // Use a power up item
+  usePowerUp() {
+    // Can't use a power up if they don't have one
+    if (this.powerup === undefined) return;
+
+    // Zoom power up
+    if (this.powerup === "boost") {
+      this.topSpeed++;
+      this.zoom = true;
+      this.zoomTime = 50;
+    }
+
+    // Freeze power up
+    if (this.powerup == "freeze") {
+      var player;
+      if (this.name == "player1") player = this.scene.players[1];
+      else player = this.scene.players[0];
+      player.freeze = true;
+      player.freezeTime = 100;
+    }
+
+    // Drop spike trap
+    if (this.powerup == "spike") {
+      this.scene.createSpike(this.position);
+    }
+
+    // Remove a lap from the other player
+    if (this.powerup == "remove lap") {
+      var player;
+      if (this.name == "player1") this.scene.players[1].lap--;
+      else this.scene.players[0].lap--;
+    }
+
+    // Activates reverse controls- forward becomes back, left becomes right
+    if (this.powerup == "reverse controls") {
+      var player;
+      if (this.name == "player1") player = this.scene.players[1];
+      else player = this.scene.players[0];
+      player.reverse = true;
+      player.reverseTime = 300;
+    }
+
+    // Remove power up
+    this.powerup = undefined;
+    this.scene.displayPowerup(this, undefined, undefined);
+  }
+
   // apply force to player to move in direction it is facing
   moveForward() {
     var theta = this.rotation.y;
     var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+    f.multiplyScalar(this.topSpeed);
+    if (this.reverse) f.negate();
     this.addForce(f.negate());
   }
 
@@ -194,29 +251,56 @@ class Player extends Group {
   moveBackward() {
     var theta = this.rotation.y;
     var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+    f.multiplyScalar(this.topSpeed);
+    if (this.reverse) f.negate();
     this.addForce(f);
   }
 
   // move player direction left
   steerLeft() {
-    this.rotation.y += this.steering;
+    if (this.reverse) this.rotation.y -= this.steering;
+    else this.rotation.y += this.steering;
   }
 
   // move player direction right
   steerRight() {
-    this.rotation.y -= this.steering;
+    if (this.reverse) this.rotation.y += this.steering;
+    else this.rotation.y -= this.steering;
   }
 
   // update the players attributes
   update(timeStamp) {
-    //return;
+    // Check whether player is frozen
+    if (this.freezeTime > 0) {
+      this.freezeTime--;
+      return;
+    }
+    else if (this.freeze) {
+      this.freeze = false;
+      this.freezeTime = 0;
+    }
+
+    // Check whether player is spinning
+    if (this.spin) {
+      this.rotation.y += 0.1;
+      this.spinOrigin += 0.1;
+      const EPS = 0.01;
+      if (2*Math.PI - this.spinOrigin < EPS) {
+        this.spin = false;
+        this.spinOrigin = 0;
+      }
+      else return;
+    }
+
+    // Apply the keys that are pressed
     this.controller.apply();
 
+    // Apply forces to the player
     var deltaT = timeStamp % 100;
     this.integrate(deltaT/500);
     TWEEN.update();
 
-    // check whether the player is inbounds
+    // Check whether the player is inbounds
     if (!this.scene.isInbounds(this.position.clone()) && timeStamp > 3000) {
       this.position.set(this.reset.x, this.reset.y, this.reset.z);
       this.distInLap = 0.0;
@@ -230,6 +314,17 @@ class Player extends Group {
 
     // Update the lap number for the player
     this.updateLap();
+
+    // Check whether zoom has runout
+    if (this.zoomTime > 0) this.zoomTime -= 1;
+    else if (this.zoom) {
+      this.zoom = false;
+      this.topSpeed--;
+    }
+
+    // Check whether reverse has runout
+    if (this.reverseTime > 0) this.reverseTime -= 1;
+    else if (this.reverse) this.reverse = false;
   }
 }
 

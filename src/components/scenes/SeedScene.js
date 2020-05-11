@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
-import { Scene, CubeTextureLoader, Vector3, Raycaster } from 'three';
-import { Road, Player, Lap } from 'objects';
+import { Scene, CubeTextureLoader, Vector3, Raycaster, ConeGeometry, MeshBasicMaterial, Mesh } from 'three';
+import { Road, Player, Lap, Powerup, Overhead } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
@@ -41,13 +41,25 @@ class SeedScene extends Scene {
         this.players = [player1, player2];
         this.collideableObjects = [this.walls];
 
+        // Add power up boxes to scene
+        var pu1 = new Vector3(p1.x, p1.y+1, p1.z-7);
+        var pu2 = new Vector3(p2.x, p2.y+1, p2.z-5);
+        const powerup1 = new Powerup(this, "pu1", pu1);
+        const powerup2 = new Powerup(this, "pu2", pu2);
+        this.powerups = [powerup1, powerup2];
+        this.powerUpMeshes = [powerup1.mesh, powerup2.mesh];
+
         // Create the lap counters for the players
         this.createLapCounter(player1);
         this.createLapCounter(player2);
         this.nlaps = 5;
 
+        // Create powerup displays for the players
+        this.createPowerupDisplay(player1);
+        this.createPowerupDisplay(player2);
+
         // add meshes to scene
-        this.add(lights, road, player1, player2, player1.box, player2.box);
+        this.add(lights, powerup1);
     }
 
     addToUpdateList(object) {
@@ -66,15 +78,29 @@ class SeedScene extends Scene {
     		var dv = gv.sub(box.position);
 
     		var ray = new Raycaster(pos, dv.clone().normalize() );
+
+        // check for collisions with scene objects
     		var collisions = ray.intersectObjects(this.collideableObjects);
     		if (collisions.length > 0 && collisions[0].distance < dv.length()) {
-          collisions[0].face.normal.y = 0;
-          player.roadBounce(collisions[0].face.normal.clone(), timeStamp);
+          if (collisions[0].object.name == "spike") {
+            if (!collisions[0].object.hit) player.spin = true;
+            collisions[0].object.hit = true;
+            this.remove(collisions[0].object);
+          }
+          else player.roadBounce(timeStamp);
+        }
+
+        // check for collisions with powerup boxes
+        var boxCollisions = ray.intersectObjects(this.powerUpMeshes);
+        if (boxCollisions.length > 0 && boxCollisions[0].distance < dv.length()) {
+          var name = boxCollisions[0].object.name;
+          if (name == "pu1") this.powerups[0].generatePowerUp(player);
+          if (name == "pu2") this.powerups[1].generatePowerUp(player);
         }
     	}
     }
 
-    // check for collisions between players
+    // Check for collisions between players
     checkPlayer(player1, player2, timeStamp) {
       var pos = player1.position.clone();
       var box = player1.box;
@@ -87,9 +113,9 @@ class SeedScene extends Scene {
     		var ray = new Raycaster(pos, dv.clone().normalize() );
     		var collisions = ray.intersectObject(player2.box);
     		if (collisions.length > 0 && collisions[0].distance < dv.length()) {
-          collisions[0].face.normal.y = 0;
-          var norm = collisions[0].face.normal;
-          player1.bounce(norm.clone(), timeStamp);
+          var theta = player2.rotation.y;
+          var norm = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+          player2.bounce(norm.clone(), timeStamp);
         }
     	}
     }
@@ -120,6 +146,43 @@ class SeedScene extends Scene {
       this.element.style.fontFamily = "fantasy";
     }
 
+    // Initialize the power up display
+    createPowerupDisplay(player) {
+      // Create the HTML div
+      this.element = document.createElement("DIV");
+      document.body.appendChild(this.element);
+
+      // CSS Styling
+      this.element.style.color = "hotpink";
+      this.element.style.position = "fixed";
+      this.element.style.top = "8%";
+      if (player.name === "player1") this.element.style.left = "2%";
+      else this.element.style.left = "52%";
+      this.element.style.fontSize = "xx-large";
+      this.element.style.fontFamily = "fantasy";
+    }
+
+    // Displays the players power ups on the screen
+    displayPowerup(player, power, control) {
+      var ind;
+      if (player.name == "player1") ind = 2;
+      else ind = 3;
+      if (power === undefined) document.body.getElementsByTagName("div")[ind].innerText = "";
+      else document.body.getElementsByTagName("div")[ind].innerText = "Press " + control + " to use " + power;
+    }
+
+    // Add a spike trap on the road
+    createSpike(pos) {
+      var geometry = new ConeGeometry(0.5, 1, 32);
+      var mat = new MeshBasicMaterial({color: 'red'});
+      var spike = new Mesh(geometry, mat);
+      spike.name = "spike";
+      this.hit = false;
+      spike.position.set(pos.x, pos.y, pos.z+3);
+      this.add(spike);
+      this.collideableObjects.push(spike);
+    }
+
     // End the game- player won the game
     endGame(winner) {
       var name;
@@ -143,11 +206,9 @@ class SeedScene extends Scene {
         // checking for collisions
         for (var player of this.players) {
           // check for collisions
-          if (timeStamp > 3000) {
-            this.checkPlayer(this.players[0], this.players[1], timeStamp);
-            this.checkPlayer(this.players[1], this.players[0], timeStamp);
-            this.checkCollisions(player, timeStamp);
-          }
+          this.checkPlayer(this.players[0], this.players[1], timeStamp);
+          this.checkPlayer(this.players[1], this.players[0], timeStamp);
+          this.checkCollisions(player, timeStamp);
         }
 
         // Check whether a player has finished, pass the winner

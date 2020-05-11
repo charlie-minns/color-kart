@@ -19,10 +19,10 @@ const setCanvas = (menu) => {
   var ctx = menu.getContext('2d');
   ctx.fillStyle = 'blue';
   ctx.fillRect(0, 0, menu.width, menu.height);
-  var imgPath = './components/scenes/galaxy.jpg';
+  /*var imgPath = './components/scenes/galaxy.jpg';
   var imgObj = new Image();
   imgObj.src = imgPath;
-  ctx.drawImage(imgObj, 0, 0);
+  ctx.drawImage(imgObj, 0, 0);*/
 
   // add title
   var gradient = ctx.createLinearGradient(0, 0, menu.width, 0);
