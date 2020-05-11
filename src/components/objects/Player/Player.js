@@ -1,4 +1,4 @@
-import { Vector3, Face3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Box3 } from 'three';
+import { Vector3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Box3 } from 'three';
 import { Controller } from 'controllers';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
@@ -11,35 +11,37 @@ class Player extends Group {
 
     this.scene = parent;
     this.name = name;
-    this.speed = 0;         // current speed
-    this.topSpeed = 2;     // how fast the player can go
-    this.mass = 1;          // weight of the kart
-    this.steering = 0.03;   // how efficient steering of kart is (in radians)
+    this.speed = 0;           // current speed
+    this.topSpeed = 2;        // how fast the player can go
+    this.mass = 1;            // weight of the kart
+    this.steering = 0.03;     // how efficient steering of kart is (in radians)
     this.netForce = new Vector3(0, 0, 0);
     this.reset = pos;
     this.position.set(pos.x, pos.y, pos.z);
     this.previous = pos;
     this.rotation.set(0, 0, 0);
     this.controller = new Controller(this);
-    this.keys = {};         // keys that are pressed
-    this.road = road;       // The road the player is racing on
-    this.lap = 1;           // lap number that the player is on
-    this.distInLap = 0.0;   // How far have they drove so far this lap?
+    this.keys = {};           // keys that are pressed
+    this.road = road;         // The road the player is racing on
+    this.lap = 1;             // lap number that the player is on
+    this.distInLap = 0.0;     // How far have they drove so far this lap?
     this.powerup = undefined; // The power up the player is holding
-    this.zoom = false;      // player's speed increases until time is up
+    this.zoom = false;        // player's speed increases until time is up
     this.zoomTime = 0;
-    this.freeze = false;    // player can't move until timer is up
+    this.freeze = false;      // player can't move until time is up
     this.freezeTime = 0;
-    this.spin = false;      // player does a 360
+    this.zap = false;         // player's speed decreases until time is up
+    this.zapTime = 0;
+    this.spin = false;        // player does a 360
     this.spinOrigin = 0;
-    this.reverse = false;   // reverse the controls for some time
+    this.reverse = false;     // player's controls reversed until time is up
     this.reverseTime = 0;
 
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
     var wireMaterial = new MeshBasicMaterial({color: 0xff0000, transparent:true, opacity:0.0});
     var box = new Mesh(cube, wireMaterial);
-	  box.position.set(pos.x, pos.y+0.25, pos.z-0.5);
+	  box.position.set(pos.x, pos.y + 0.25, pos.z - 0.5);
     box.rotation.set(0, 0, 0);
     this.box = box;
     parent.add(box);
@@ -58,10 +60,6 @@ class Player extends Group {
       gltf.scene.rotateY(Math.PI); // Roate to correct orientation
       this.add(gltf.scene);
     });
-
-    // Constant offsets for camera position
-    const yPosition = this.position.y + 2.5;
-    const zPosition = this.position.z + 9;
 
     // Set camera
     camera.position.set(0, 2.5, 9);
@@ -132,7 +130,6 @@ class Player extends Group {
 
     // reset the netforce
     this.netForce = new Vector3(0, 0, 0);
-    // ----------- STUDENT CODE END ------------
   }
 
   // adds a force f to the player
@@ -168,7 +165,7 @@ class Player extends Group {
     var outerN = norm.clone().multiplyScalar(outerR);
     var cen = innerN.clone().add(outerN).divideScalar(2);
     var r = this.calculateRadius();
-    var cenR = (innerR + outerR)/2;
+    var cenR = (innerR + outerR) / 2;
     var f;
     if (r < cenR) f = cen.sub(innerN);
     else f = cen.sub(outerN);
@@ -193,44 +190,67 @@ class Player extends Group {
 
   // Use a power up item
   usePowerUp() {
-    // Can't use a power up if they don't have one
-    if (this.powerup === undefined) return;
+    let player;
+    switch (this.powerup) {
+      // Zoom power up
+      case "boost":
+        this.topSpeed++;
+        this.zoom = true;
+        this.zoomTime = 50;
+        break;
 
-    // Zoom power up
-    if (this.powerup === "boost") {
-      this.topSpeed++;
-      this.zoom = true;
-      this.zoomTime = 50;
-    }
+      // Zap power up
+      case "zap":
+        if (this.name === "player1") player = this.scene.players[1];
+        else player = this.scene.players[0];
+        player.topSpeed--;
+        player.snail = true;
+        player.snailTime = 50;
+        break;
 
-    // Freeze power up
-    if (this.powerup == "freeze") {
-      var player;
-      if (this.name == "player1") player = this.scene.players[1];
-      else player = this.scene.players[0];
-      player.freeze = true;
-      player.freezeTime = 100;
-    }
+      // Freeze power up
+      case "freeze":
+        if (this.name == "player1") player = this.scene.players[1];
+        else player = this.scene.players[0];
+        player.freeze = true;
+        player.freezeTime = 100;
+        break;
 
-    // Drop spike trap
-    if (this.powerup == "spike") {
-      this.scene.createSpike(this.position);
-    }
+      // Drop spike trap
+      case "spike":
+        this.scene.createSpike(this.position);
+        break;
 
-    // Remove a lap from the other player
-    if (this.powerup == "remove lap") {
-      var player;
-      if (this.name == "player1") this.scene.players[1].lap--;
-      else this.scene.players[0].lap--;
-    }
+      // Drop three spike traps
+      case "triple spike":
+        this.scene.createSpike( new Vector3(this.position.x - 2, this.position.y, this.position.z) );
+        this.scene.createSpike(this.position);
+        this.scene.createSpike( new Vector3(this.position.x + 2, this.position.y, this.position.z) );
+        break;
 
-    // Activates reverse controls- forward becomes back, left becomes right
-    if (this.powerup == "reverse controls") {
-      var player;
-      if (this.name == "player1") player = this.scene.players[1];
-      else player = this.scene.players[0];
-      player.reverse = true;
-      player.reverseTime = 300;
+      // Remove a lap from the other player
+      case "remove lap":
+        if (this.name == "player1") this.scene.players[1].lap--;
+        else this.scene.players[0].lap--;
+        break;
+
+      // Add a lap to the player
+      case "add lap":
+        if (this.name == "player1") this.scene.players[0].lap++;
+        else this.scene.players[1].lap++;
+        break;
+
+      // Activates reverse controls- forward becomes back, left becomes right
+      case "reverse controls":
+        if (this.name == "player1") player = this.scene.players[1];
+        else player = this.scene.players[0];
+        player.reverse = true;
+        player.reverseTime = 300;
+        break;
+
+      // Can't use a power up if they don't have one
+      default:
+        return;
     }
 
     // Remove power up
@@ -240,8 +260,8 @@ class Player extends Group {
 
   // apply force to player to move in direction it is facing
   moveForward() {
-    var theta = this.rotation.y;
-    var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+    const theta = this.rotation.y;
+    const f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
     f.multiplyScalar(this.topSpeed);
     if (this.reverse) f.negate();
     this.addForce(f.negate());
@@ -249,8 +269,8 @@ class Player extends Group {
 
   // apply force to player to move in the opposite direction that it is facing
   moveBackward() {
-    var theta = this.rotation.y;
-    var f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+    const theta = this.rotation.y;
+    const f = new Vector3(Math.sin(theta), 0, Math.cos(theta));
     f.multiplyScalar(this.topSpeed);
     if (this.reverse) f.negate();
     this.addForce(f);
@@ -296,8 +316,8 @@ class Player extends Group {
     this.controller.apply();
 
     // Apply forces to the player
-    var deltaT = timeStamp % 100;
-    this.integrate(deltaT/500);
+    const deltaT = timeStamp % 100;
+    this.integrate(deltaT / 500);
     TWEEN.update();
 
     // Check whether the player is inbounds

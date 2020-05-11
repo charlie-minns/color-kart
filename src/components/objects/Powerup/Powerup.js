@@ -1,4 +1,4 @@
-import { Group, TorusKnotGeometry, MeshBasicMaterial, Mesh } from 'three';
+import { Group, TorusKnotGeometry, MeshNormalMaterial, Mesh } from 'three';
 
 class Powerup extends Group {
   constructor(parent, name, pos) {
@@ -7,14 +7,13 @@ class Powerup extends Group {
       this.name = name;
 
       // Geometry of power up box
-      var geometry = new TorusKnotGeometry(0.5, 0.2);
+      const geometry = new TorusKnotGeometry(0.5, 0.25);
       this.geometry = geometry;
 
       // Material of power up box
-      var mat = new MeshBasicMaterial({color: 0xffff00, transparent:true, opacity:0.75});
-
+      const mat = new MeshNormalMaterial({transparent:true, opacity:0.75});
       // Create power up box
-      var powerup = new Mesh(geometry, mat);
+      const powerup = new Mesh(geometry, mat);
       this.mesh = powerup;
       this.mesh.name = name;
       parent.add(powerup);
@@ -26,7 +25,7 @@ class Powerup extends Group {
       this.timer = 0;
 
       // List of all the available power ups
-      this.powers = ["boost", "freeze", "spike", "remove lap", "reverse controls"];
+      this.powers = ["boost", "zap", "freeze", "spike", "triple spike", "remove lap", "add lap", "reverse controls"];
 
       // Add to the scene update list
       parent.addToUpdateList(this);
@@ -39,7 +38,7 @@ class Powerup extends Group {
 
     // Give random power up to the player
     const npowers = this.powers.length;
-    var ind = Math.round(Math.random()*npowers);
+    var ind = Math.round(Math.random() * npowers);
     var power = this.powers[ind];
     player.getPowerUp(power);
 

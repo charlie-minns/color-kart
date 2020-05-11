@@ -1,5 +1,5 @@
-import { Group, RingBufferGeometry, TorusBufferGeometry, MeshBasicMaterial, MeshToonMaterial, MeshNormalMaterial, Mesh, ShaderMaterial, TextureLoader, PlaneBufferGeometry } from 'three';
-import { RepeatWrapping, NearestFilter, DoubleSide } from 'three';
+import { Group, RingBufferGeometry, TorusBufferGeometry, MeshBasicMaterial, MeshNormalMaterial, Mesh, ShaderMaterial, TextureLoader, PlaneBufferGeometry } from 'three';
+import { RepeatWrapping, NearestFilter } from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import MAT from './checkerboard.jpg';
 
@@ -62,12 +62,9 @@ class Road extends Group {
         parent.add(road);
 
         // Create walls
-        // geometry for the sides of the road
-        const geometries = [];
+        const geometries = []; // geometry for the sides of the road
 
-        const mat = new MeshNormalMaterial(
-            {color: 0x432355}
-        );
+        const wallMat = new MeshNormalMaterial();
         const innerEdgeGeometry = new TorusBufferGeometry(innerR + tube / 2, tube, 10, 30);
         const outerEdgeGeometry = new TorusBufferGeometry(outerR + tube / 2, tube, 10, 30);
         innerEdgeGeometry.name = "inner";
@@ -76,10 +73,10 @@ class Road extends Group {
 
         // Merge wall geometries
         const mergedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, false);
-        const mergedMesh = new Mesh(mergedGeometry, mat);
-        mergedMesh.rotation.x = Math.PI / 2;
-        this.walls = mergedMesh;
-        parent.add(mergedMesh);
+        const walls = new Mesh(mergedGeometry, wallMat);
+        walls.rotation.x = Math.PI / 2;
+        this.walls = walls;
+        parent.add(walls);
 
         // Create start strip - modified code from Three.js Tutorial (Lights)
         // https://threejsfundamentals.org/threejs/lessons/threejs-lights.html
@@ -91,21 +88,17 @@ class Road extends Group {
         texture.wrapS = RepeatWrapping;
         texture.wrapT = RepeatWrapping;
         texture.magFilter = NearestFilter;
-
-        const repeats = planeWidth / 2;
-        texture.repeat.set(repeats, 1);
+        texture.repeat.set(planeWidth / 2, 1);
 
         const planeGeo = new PlaneBufferGeometry(planeWidth, planeHeight);
-        const planeMat = new MeshBasicMaterial({
-            map: texture,
-            side: DoubleSide,
-        });
+        const planeMat = new MeshBasicMaterial( {map: texture} );
 
-        const mesh = new Mesh(planeGeo, planeMat);
-        mesh.rotation.x = Math.PI / 2;
-        mesh.position.set(50, 0.001, 0);
-        this.start = mesh;
-        parent.add(mesh);
+        const strip = new Mesh(planeGeo, planeMat);
+        strip.rotation.x = Math.PI / 2;
+        strip.rotation.y = Math.PI;
+        strip.position.set(50, 0.001, 0);
+        this.start = strip;
+        parent.add(strip);
     }
 }
 

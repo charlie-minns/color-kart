@@ -10,7 +10,6 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3, Audio, AudioListener, AudioLoader } from 'three';
 import { SeedScene } from 'scenes';
 import MUSIC from './sounds/Mario Kart - SNES Mario Circuit (Remix).mp3';
-//import { Stats } from 'stats.js';
 
 // set the menu style
 const setCanvas = (menu) => {
@@ -72,7 +71,6 @@ audioLoader.load( MUSIC, function(buffer) {
 	backgroundMusic.setBuffer(buffer);
 	backgroundMusic.setLoop(true);
 	backgroundMusic.setVolume(0.1);
-	//backgroundMusic.play();
 });
 
 // start game
@@ -145,6 +143,7 @@ const main = function() {
     name2.style.display = 'none';
     button.style.display = 'none';
     menu.style.display = 'none';
+    backgroundMusic.play(); // Play background music
     play();
   };
   document.body.appendChild(button);

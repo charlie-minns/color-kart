@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, CubeTextureLoader, Vector3, Raycaster, ConeGeometry, MeshBasicMaterial, Mesh } from 'three';
+import { Scene, CubeTextureLoader, Vector3, Raycaster, ConeGeometry, MeshBasicMaterial, Mesh, MeshNormalMaterial } from 'three';
 import { Road, Player, Lap, Powerup, Overhead } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
@@ -42,8 +42,8 @@ class SeedScene extends Scene {
         this.collideableObjects = [this.walls];
 
         // Add power up boxes to scene
-        var pu1 = new Vector3(p1.x, p1.y+1, p1.z-7);
-        var pu2 = new Vector3(p2.x, p2.y+1, p2.z-5);
+        var pu1 = new Vector3(p1.x, p1.y + 1, p1.z - 7);
+        var pu2 = new Vector3(p2.x, p2.y + 1, p2.z - 5);
         const powerup1 = new Powerup(this, "pu1", pu1);
         const powerup2 = new Powerup(this, "pu2", pu2);
         this.powerups = [powerup1, powerup2];
@@ -173,9 +173,9 @@ class SeedScene extends Scene {
 
     // Add a spike trap on the road
     createSpike(pos) {
-      var geometry = new ConeGeometry(0.5, 1, 32);
-      var mat = new MeshBasicMaterial({color: 'red'});
-      var spike = new Mesh(geometry, mat);
+      const geometry = new ConeGeometry(0.5, 1, 32);
+      const mat = new MeshNormalMaterial();
+      const spike = new Mesh(geometry, mat);
       spike.name = "spike";
       this.hit = false;
       spike.position.set(pos.x, pos.y, pos.z+3);
