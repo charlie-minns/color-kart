@@ -1,8 +1,6 @@
-# COS 426 Final Project Seed
+# Colorful Kart Racing
 
-This project will help you get started on your ThreeJS project and provide a strong foundation for extension. It sets up a simple scene, camera, and renderer in a modern JavaScript environment.
-
-[Online Demo](https://reillybova.github.io/three-seed/)
+This is our final project for COS 426, Computer Graphics. Thank you to the course TAs for providing a simple scene, camera, and renderer in a modern JavaScript environment for us to build off of, which can found found at [this link](https://reillybova.github.io/three-seed/).
 
 ## Installation
 This project uses the GitHub's NodeJS Package Manager (npm) to manage project dependencies. All npm settings, as well as your project dependencies and their versionings, are defined in the file `package.json`.
@@ -10,25 +8,6 @@ This project uses the GitHub's NodeJS Package Manager (npm) to manage project de
 The NodeJS Package Manager, which is the world's largest software registry and supports over one million open source JavaScript packages and libraries, runs in a NodeJS runtime. The NodeJS runtime is essentially a port of Google Chrome's JavaScript V8 engine that will run in your terminal.
 
 Before you begin, you will need to install [NodeJS and npm](https://www.npmjs.com/get-npm). Then, open a terminal instance and set your working directory to the root of the project and run `npm install`.
-
-## Setting Up Your Project
-Before you start your project, look inside `package.json`. Take a note of the following fields, and adjust them where appropriate:
-
-* `name`: This is your project name as it would appear on the npm registry (if published). You should replace this with your own project name, but make sure to preserve the all lowercase and hyphenated format.
-
-* `repository`: This should hold the name of your repository for this project. It should match name of your GitHub repository as it appears in the URL. For instance, "https://github.com/ReillyBova/three-seed" would become "three-seed".
-
-* `version`: This field is used to version your project. The standard format for these is "MAJOR.MINOR.PATCH". You can update this as needed (for instance, setting it to "1.0.0" when you are finished with the project), or you can choose to ignore it.
-
-* `title`: This field contains the "pretty" name of your project. When you run your project in the browser, this title will be injected into the site's HTML header. Most browsers will use this to label the browser tab.
-
-* `description`: A really quick description of your project.
-
-* `keywords`: A list of keywords for you project. Feel free to modify as needed, note that the last keyword should **not** be followed by a comma, since `package.json` must adhere to JSON format.
-
-* `scripts`: This field contains several npm scripts that you will find useful. The first three commands (`start`, `prebuild`, and `build`) are used to build the development webserver, as well as the production bundle, for your project. `format` is used to "prettify" your JavaScript into a standardized format, as specified in `.prettierrc`. Finally, `deploy` is used to publish your project to GitHub Pages as a live demo. You can run any of these commands from the command line using `npm run <script-name>`.
-
-The dependencies below these fields tell npm what libraries (and more specifically, which versions of these libraries) to download when you run `npm install`. If there are further packages you would like to add to your project, you can install them by running `npm install <package-name>`.
 
 ## Launching a Local Webserver
 Now that your development environment is ready to go, you can spin up a local development webserver using `npm start`. This command will bundle the project code and start a development server at [http://localhost:8080/](http://localhost:8080/). Visit this in your web browser; every time you make changes to the code, *the page will automatically refresh.* If you did everything correctly, you should see something that looks like [this](https://reillybova.github.io/three-seed/) in your browser. Congratulations --- now you are ready to work!
