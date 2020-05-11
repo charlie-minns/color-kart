@@ -25,7 +25,8 @@ class Powerup extends Group {
       this.timer = 0;
 
       // List of all the available power ups
-      this.powers = ["boost", "zap", "freeze", "spike", "triple spike", "remove lap", "add lap", "reverse controls"];
+      this.powers = ["boost", "zap", "freeze", "spike", "triple spike",
+                     "remove lap", "add lap", "reverse controls", "missile"];
 
       // Add to the scene update list
       parent.addToUpdateList(this);

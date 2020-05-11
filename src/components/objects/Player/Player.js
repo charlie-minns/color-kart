@@ -1,5 +1,6 @@
 import { Vector3, Group, CubeGeometry, Mesh, MeshBasicMaterial, Box3 } from 'three';
 import { Controller } from 'controllers';
+import { Missile } from 'objects';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import MARIO from './Red Kart.glb';
@@ -36,6 +37,8 @@ class Player extends Group {
     this.spinOrigin = 0;
     this.reverse = false;     // player's controls reversed until time is up
     this.reverseTime = 0;
+    this.missileFired = false; // missile object fired from player
+    this.missile = undefined; // fire a missile towards another player
 
     // cube around kart to detect collisions
     var cube = new CubeGeometry(1.5, 1, 3);
@@ -249,6 +252,15 @@ class Player extends Group {
         player.reverseTime = 300;
         break;
 
+        // Sends a missile to hit the other player
+        case "missile":
+          if (this.name == "player1") player = this.scene.players[1];
+          else player = this.scene.players[0];
+          var missile = new Missile(this.scene, this, player);
+          this.missileFired = true;
+          this.missile = missile;
+          break;
+
       // Can't use a power up if they don't have one
       default:
         return;
@@ -257,6 +269,11 @@ class Player extends Group {
     // Remove power up
     this.powerup = undefined;
     this.scene.displayPowerup(this, undefined, undefined);
+  }
+
+  // Player gets hit by a missile
+  hitByMissile() {
+    this.spin = true;
   }
 
   // apply force to player to move in direction it is facing
@@ -346,6 +363,9 @@ class Player extends Group {
     // Check whether reverse has runout
     if (this.reverseTime > 0) this.reverseTime -= 1;
     else if (this.reverse) this.reverse = false;
+
+    // Update missile position if one is fired
+    if (this.missileFired) this.missile.updatePosition();
   }
 }
 
