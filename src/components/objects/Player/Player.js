@@ -256,7 +256,7 @@ class Player extends Group {
         case "missile":
           if (this.name == "player1") player = this.scene.players[1];
           else player = this.scene.players[0];
-          var missile = new Missile(this.scene, this, player);
+          const missile = new Missile(this.scene, this, player);
           this.missileFired = true;
           this.missile = missile;
           break;

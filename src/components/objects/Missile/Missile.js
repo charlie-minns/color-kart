@@ -1,4 +1,4 @@
-import { Group, RingBufferGeometry, SphereGeometry, MeshBasicMaterial, MeshNormalMaterial, Mesh, ShaderMaterial, TextureLoader, PlaneBufferGeometry } from 'three';
+import { Group, SphereBufferGeometry, MeshNormalMaterial, Mesh } from 'three';
 import { RepeatWrapping, NearestFilter } from 'three';
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
@@ -11,7 +11,7 @@ class Missile extends Group {
         this.target = target;
 
         // Geometry of the missile
-        const geometry = new SphereGeometry(0.5, 24, 24);
+        const geometry = new SphereBufferGeometry(0.5, 24, 24);
         this.geometry = geometry;
 
         // Material of missile

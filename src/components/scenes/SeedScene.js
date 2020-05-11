@@ -51,7 +51,7 @@ class RacingScene extends Scene {
 
         // Add obstacles to scene
         const obstacles = new Obstacles(this);
-        this.obstacleMeshes = [obstacles.mesh1, obstacles.mesh2];
+        this.obstacleMeshes = [obstacles.mesh1, obstacles.mesh2, obstacles.mesh3];
 
         // Create the lap counters for the players
         this.createLapCounter(player1);
