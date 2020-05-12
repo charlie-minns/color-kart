@@ -18,7 +18,6 @@
 <li> <a href='#Introduction'>Introduction</a></li>
 <li> <a href='#Methodology'>Methodology</a></li>
 <li> <a href='#Results'>Results</a></li>
-<li> <a href='#Discussion'>Introduction</a></li>
 <li> <a href='#Conclusion'>Conclusion</a></li>
 <li> <a href='#Contributions'>Contributions</a></li>
 <li> <a href='#Works+Cited'>Works Cited</a></li>
@@ -31,6 +30,23 @@
 
 <p><hr><p><a name='Methodology'></a><h2>Methodology</h2><p><hr><p>
 <p><hr><p><h3>Start and End Menus</h3><p><hr><p>
+    One piece of the game that we implemented was the Start and End menus, allowing the players to input their names, as well 
+as refresh the game if they wish to play a second time. There was the potential to implement this piece in many different ways, 
+including showing a mini canvas over the game before it starts and after it ends, while manipulating the opacity of the menus. 
+The implementation that we decided to go with was creating three different canvases that fit the entire window: the start menu, 
+the game scene, and the game over menu. The key was that only one of the canvases would be displayed at a single time. The 
+start menu is the first canvas to be displayed, while the other canvases are initially set to display: “none”. Then, on the 
+press of the PLAY button, the function switches the display from the start menu to the in-game scene. Finally, we have a 
+function that decides when the end of the game is reached (which is related to the lap counter of each of the players). Once 
+the end of the game is reached, we once again switch which canvas is displayed, this time from the in-game scene to the game 
+over scene. All of these canvas creations and style manipulations are done by altering the HTML indirectly through the 
+javascript files (without needing to create more html files). We decided to go with this implementation for a few reasons. 
+For one, we felt that having separate full-sized screens for the different stages of the game allowed for better flow, and a 
+little bit more creative flexibility. Furthermore, we aimed to place all of the HTML manipulation within the same javascript 
+files as all of the other functions of the game in order to keep all of the similar modules close together. For our individual 
+needs, having certain functions (like creating the canvases as well as showing them) close together made debugging a bit 
+easier, especially considering none of us had a lot of HTML/CSS experience from the past.
+
 <p><hr><p><h3>Cameras</h3><p><hr><p>
 <p><hr><p><h3>Split Screen</h3><p><hr><p>
 <p><hr><p><h3>Road</h3><p><hr><p>
@@ -38,14 +54,52 @@
 <p><hr><p><h3>Collisions</h3><p><hr><p>
 <p><hr><p><h3>Controller</h3><p><hr><p>
 <p><hr><p><h3>Lap Counter</h3><p><hr><p>
+    Yet another piece of the game that we needed to implement in order to complete our approach was the Lap Counter. Since the 
+goal of winning the game was heavily reliant on the number of laps traversed by a given player (at least in our approach), it 
+was essential that we made sure there was no way to cheat the system in any way. For example, our first idea was that we could 
+include an invisible bounding box at the start line, and then simply add the lap count that a player holds if they were to 
+cross the start line. However, we quickly realized that there is a huge flaw in this logic, and that is a player could easily 
+drive over the starting line continuously (going backwards and forwards) and accumulate their laps in a cheating manner. To 
+fix this issue, we decided that it would be best to also include on each player a “Distance travelled in this lap” property, 
+along with establishing a “Distance Threshold” that the player must drive before being able to earn a lap. We decided that a 
+good distance threshold is about 75% of the track (using the inner radius as opposed to the outer radius). This way, it is 
+more beneficial for the player to earn their lap in the organic way, since by the time they are 75% of the way around the 
+track, it is closer for them to finish the lap by continuing anyway. Once they have collided with the bounding box on the 
+starting line, we increment their lap count as well as returning the “distance travelled in this lap” property to 0. Before 
+the bounding box idea, we considered an approach in which we included a plane that the player would intersect. However, given 
+that our track is circular and a player would cross the plane two times in one lap, there were too many conditions to consider 
+to really consider this implementation over the bounding box implementation.
+
 <p><hr><p><h3>Power-ups</h3><p><hr><p>
 <p><hr><p><h3>Obstacles</h3><p><hr><p>
 
 <p><hr><p><a name='Results'></a><h2>Results</h2><p><hr><p>
-
-<p><hr><p><a name='Discussion'></a><h2>Discussion</h2><p><hr><p>
+    As a whole, we measured success by the playability of the game, and just how fun it was for us and others to race together. 
+On a smaller scale, we were able to measure success daily because we continuously met and set goals for ourselves for what 
+needed to be done at each different stage. We were also able to better measure success through small experiments such as 
+testing with friends and family members. External feedback is one of the most valuable sources of criticism, especially when 
+we are stuck looking at the same thing for hours on end. More experiments include testing certain corner cases or conditions 
+(such as what happens when more than one button is pressed, when player hits ball and uses powerup, etc). Overall, our results 
+indicate that not only is our game playable, but that it can be exciting for both of the players.
 
 <p><hr><p><a name='Conclusion'></a><h2>Conclusion</h2><p><hr><p>
+    Overall, the approach that we took is promising - the game is playable and enjoyable. The power ups provide an exciting 
+feature to the table, as do the obstacles to avoid, and the colors help bring the track to life. That being said, another 
+approach that may have proved better is using Physijs, Cannon for the physics. These two libraries handle collisions better 
+than our current bounding box implementation, which are not 100% accurate and do sprout occasional bugs. Furthemore, those 
+driving physics libraries offer more realistic steering than our current form. Some followup work that should be done next 
+would definitely include these driving/steering/collision improvements. So maybe re-writing with Physijs implementation. 
+There are also many other improvements/next steps to consider. A different road shape would add a LOT more to the game 
+(constantly going left the whole way gets boring fairly quickly). However, changing the track shape adds a lot of complexity 
+to our implementation, and would require a rework essentially. Some more next steps could be to add better sound effects, such 
+as for collisions, powerups, lap traversal, etc. Another big next step is to make the menus look prettier, since right now 
+they are very minimal in style. Overall, we learned so much during this project! For one, we have a much better understanding 
+of HTML - adding text to the screen and styling it, as well as navigating in the web browser (adding buttons, etc.). We also 
+are able to load models and textures from raw files. But perhaps the biggest thing we learned is the process and components 
+that go into rendering a scene in THREE.js. Understanding how a renderer, camera, and scene work together to display animations 
+and images on the screen is something that many students come into this course looking forward to, and this knowledge is 
+perhaps the most valuable.
+
 
 <p><hr><p><a name='Contributions'></a><h2>Contributions</h2><p><hr><p>
 <p><hr><p><h3>Scott Aravena</h3><p><hr><p>
