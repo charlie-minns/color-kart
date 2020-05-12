@@ -1,1 +1,1 @@
-export { default as RacingScene } from './SeedScene.js';
+export { default as RacingScene } from './RacingScene.js';

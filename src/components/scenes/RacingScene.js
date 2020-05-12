@@ -63,6 +63,9 @@ class RacingScene extends Scene {
 
         // Game does not start off as ended
         this.gameEnded = false;
+
+        // Timer for game start
+        this.timer = 0;
     }
 
     addToUpdateList(object) {
@@ -206,8 +209,15 @@ class RacingScene extends Scene {
 
       // Decide the winner
       var name;
-      if (winner.name == "player1") name = document.getElementById("name1").value;
-      else name = document.getElementById("name2").value;
+      var color;
+      if (winner.name == "player1") {
+        name = document.getElementById("name1").value;
+        color = 'red';
+      }
+      else {
+        name = document.getElementById("name2").value;
+        color = 'green';
+      }
       if (name == "") name = winner.name;
 
       // Display the winner
@@ -215,7 +225,7 @@ class RacingScene extends Scene {
       document.body.appendChild(winnerDisplay);
       winnerDisplay.style.top = "30%";
       winnerDisplay.style.left = "37%";
-      winnerDisplay.style.color = "white";
+      winnerDisplay.style.color = color;
       winnerDisplay.style.position = "fixed";
       winnerDisplay.style.fontSize = "xxx-large";
       winnerDisplay.style.fontFamily = "fantasy";
@@ -239,7 +249,11 @@ class RacingScene extends Scene {
     // update scene
     update(timeStamp) {
         // Wait for beeps to allow movement
-        if (timeStamp < 4800) return;
+        if (this.timer > 0) {
+          this.timer--;
+          // add countdown? timer corresponds to number opacity
+          return;
+        }
 
         const { updateList } = this.state;
 

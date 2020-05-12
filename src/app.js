@@ -189,6 +189,7 @@ const main = function() {
     menu.style.display = 'none';
     backgroundMusic.play(); // Play background music
     engineSound.play();     // Play engine sound
+    scene.timer = 150;      // Start count down 
     play();
   };
   document.body.appendChild(button);

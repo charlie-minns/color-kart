@@ -207,8 +207,8 @@ class Player extends Group {
         if (this.name === "player1") player = this.scene.players[1];
         else player = this.scene.players[0];
         player.topSpeed--;
-        player.snail = true;
-        player.snailTime = 50;
+        player.zap = true;
+        player.zapTime = 50;
         break;
 
       // Freeze power up
@@ -357,6 +357,13 @@ class Player extends Group {
     else if (this.zoom) {
       this.zoom = false;
       this.topSpeed--;
+    }
+
+    // Check whether zap has runout
+    if (this.zapTime > 0) this.zapTime -= 1;
+    else if (this.zap) {
+      this.zap = false;
+      this.topSpeed++;
     }
 
     // Check whether reverse has runout
