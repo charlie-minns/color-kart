@@ -70,6 +70,9 @@ class RacingScene extends Scene {
 
         // Timer for game start
         this.timer = 0;
+
+        // Create a countdown
+        this.createCountDown();
     }
 
     addToUpdateList(object) {
@@ -258,12 +261,39 @@ class RacingScene extends Scene {
       button.style.fontFamily = "fantasy";
     }
 
+    // Creates a countdown to begin the race
+    createCountDown() {
+      let counter = document.createElement("div");
+      document.body.appendChild(counter);
+      counter.style.top = "48%";
+      counter.style.left = "48%";
+      counter.style.color = 'white';
+      counter.style.position = "fixed";
+      counter.style.fontSize = "120px";
+      counter.style.fontFamily = "fantasy";
+    }
+
+    // Updates countdown
+    countDown() {
+      let count = 3;
+      let max = 150;
+      let min = 100;
+      if (this.timer < 100) {count = 2; max = 100; min = 50;}
+      if (this.timer < 50) {count = 1; max = 50; min = 0;}
+      if (this.timer < 0) {count = "GO!"; max = 0; min = -50;}
+      let opacityValue = (this.timer - min)/(max - min)*100;
+      let opacity = opacityValue.toString() + "%";
+      let counter = document.body.getElementsByTagName("div")[4];
+      counter.style.opacity = opacity;
+      counter.innerText = count;
+    }
+
     // update scene
     update(timeStamp) {
         // Wait for beeps to allow movement
-        if (this.timer > 0) {
+        if (this.timer > -50) {
           this.timer--;
-          // add countdown? timer corresponds to number opacity
+          this.countDown();
           return;
         }
 
