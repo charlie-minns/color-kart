@@ -20,16 +20,17 @@ The controller is an object that we used to handle user input. This is where we 
 
 ## Powerup
 The scene creates two powerup boxes on the track so each player could get one power-up per lap. We made a powerup class that creates a TorusKnot geometry, and added a material to fit our game’s style. An attribute of this object is a list of possible power-ups, and when a player collides with the mesh a random string will be taken from the list and added to the player’s power-up attribute. After a collision, the power-up item is made transparent, and a timer is activated so that the players cannot interact with this mesh again for some time.  Upon receiving the power-up, the player is notified that they have it and can choose when to use it through keyboard input. The power-ups we have implemented are:
-*boost: speed increases for some time
-*zap: opponent’s speed decreases for some time
-*freeze: opponent cannot move for some time
-*spike: cone mesh placed on the track behind the player
-*triple spike: three cone meshes placed on the track behind the player
-*add lap: player's lap count increases
-*remove lap: opponent’s lap count decreases
-*reverse controls: opponent’s controls are reversed, so forward is back and steering left turns the kart right etc. 
-*missile: this player fires a sphere mesh at the other player, which updates at each step to move towards the player
-Upon colliding with a spike or missile object, the player’s spin attribute is activated, causing them to complete a full 360 turn during which they cannot move. 
+
+* boost: speed increases for some time
+* zap: opponent’s speed decreases for some time
+* freeze: opponent cannot move for some time
+* spike: cone mesh placed on the track behind the player
+* triple spike: three cone meshes placed on the track behind the player
+* add lap: player's lap count increases
+* remove lap: opponent’s lap count decreases
+* reverse controls: opponent’s controls are reversed, so forward is back and steering left turns the kart right etc. 
+* missile: this player fires a sphere mesh at the other player, which updates at each step to move towards the player
+Upon colliding with a spike or missile object, the player’s spin attribute is activated, causing them to complete a full 360 turn during which they cannot move
 
 ## Obstacles 
 To make the gameplay more interesting, we also added some moving obstacles to the scene that the player would bounce off of if they collided with them. These objects position's update over time according to sine and cosine functions. Each obstacles object consists of three octahedrons following different functions to add randomness to the way these obstacles move and making them more difficult to avoid.  
