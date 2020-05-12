@@ -1,4 +1,4 @@
-import { Group, TorusKnotGeometry, MeshNormalMaterial, Mesh } from 'three';
+import { Group, TorusKnotBufferGeometry, MeshNormalMaterial, Mesh } from 'three';
 
 class Powerup extends Group {
   constructor(parent, name, pos) {
@@ -7,7 +7,7 @@ class Powerup extends Group {
       this.name = name;
 
       // Geometry of power up box
-      const geometry = new TorusKnotGeometry(0.5, 0.25);
+      const geometry = new TorusKnotBufferGeometry(0.5, 0.25);
       this.geometry = geometry;
 
       // Material of power up box

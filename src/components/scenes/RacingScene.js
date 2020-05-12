@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, CubeTextureLoader, Vector3, Raycaster, ConeGeometry, MeshBasicMaterial, Mesh, MeshNormalMaterial } from 'three';
-import { Road, Player, Lap, Powerup, Overhead } from 'objects';
+import { Road, Player, Lap, Powerup, Overhead, Obstacles } from 'objects';
 import { BasicLights } from 'lights';
 import MAT from './galaxy.jpg';
 
@@ -42,12 +42,16 @@ class RacingScene extends Scene {
         this.collideableObjects = [this.walls];
 
         // Add power up boxes to scene
-        var pu1 = new Vector3(p1.x, p1.y + 1, p1.z - 7);
-        var pu2 = new Vector3(p2.x, p2.y + 1, p2.z - 5);
+        const pu1 = new Vector3(p1.x, p1.y + 1, p1.z - 7);
+        const pu2 = new Vector3(p2.x, p2.y + 1, p2.z - 5);
         const powerup1 = new Powerup(this, "pu1", pu1);
         const powerup2 = new Powerup(this, "pu2", pu2);
         this.powerups = [powerup1, powerup2];
         this.powerUpMeshes = [powerup1.mesh, powerup2.mesh];
+
+        // Add obstacles to scene
+        const obstacles = new Obstacles(this);
+        this.obstacleMeshes = [obstacles.mesh1, obstacles.mesh2, obstacles.mesh3];
 
         // Create the lap counters for the players
         this.createLapCounter(player1);
@@ -102,6 +106,14 @@ class RacingScene extends Scene {
           var name = boxCollisions[0].object.name;
           if (name == "pu1") this.powerups[0].generatePowerUp(player);
           if (name == "pu2") this.powerups[1].generatePowerUp(player);
+        }
+
+        // check for collisions with obstacles
+        var obstacleCollisions = ray.intersectObjects(this.obstacleMeshes);
+        if (obstacleCollisions.length > 0 && obstacleCollisions[0].distance < dv.length()) {
+          var theta = player.rotation.y;
+          var norm = new Vector3(Math.sin(theta), 0, Math.cos(theta));
+          player.bounce(norm.clone(), timeStamp);
         }
     	}
     }

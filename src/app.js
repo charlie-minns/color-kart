@@ -16,7 +16,7 @@ import ENGINE from './sounds/Engine Sound.mp3';
 const setCanvas = (menu) => {
   menu.width = window.innerWidth;
   menu.height = window.innerHeight;
-  var ctx = menu.getContext('2d');
+  const ctx = menu.getContext('2d');
   ctx.fillStyle = 'blue';
   ctx.fillRect(0, 0, menu.width, menu.height);
   /*var imgPath = './components/scenes/galaxy.jpg';
@@ -25,7 +25,7 @@ const setCanvas = (menu) => {
   ctx.drawImage(imgObj, 0, 0);*/
 
   // add title
-  var gradient = ctx.createLinearGradient(0, 0, menu.width, 0);
+  const gradient = ctx.createLinearGradient(0, 0, menu.width, 0);
   gradient.addColorStop("0", "magenta");
   gradient.addColorStop("0.5", "green");
   gradient.addColorStop("1.0", "red");
@@ -113,7 +113,7 @@ const engineLoader = new AudioLoader();
 engineLoader.load( ENGINE, function(buffer) {
     engineSound.setBuffer(buffer);
     engineSound.setLoop(true);
-    engineSound.setVolume(0.1);
+    engineSound.setVolume(0.2);
 });
 
 // start game
@@ -124,8 +124,8 @@ const play = () => {
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     // get screen width and height
-    var w = window.innerWidth;
-    var h = window.innerHeight;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
 
     // clear renderer
     renderer.setScissorTest(false);
@@ -170,17 +170,17 @@ const windowResizeHandler = () => {
 const main = function() {
   // Create the HTML div
   //var div = document.createElement("DIV");
-  var name1 = document.createElement("input");
+  const name1 = document.createElement("input");
   name1.id = "name1";
   name1.placeholder = 'Enter name of Player 1';
   document.body.appendChild(name1);
 
-  var name2 = document.createElement("input");
+  const name2 = document.createElement("input");
   name2.id = "name2";
   name2.placeholder = 'Enter name of Player 2';
   document.body.appendChild(name2);
 
-  var button = document.createElement("button");
+  const button = document.createElement("button");
   button.innerHTML = 'PLAY';
   button.onclick = function() {
     name1.style.display = 'none';
