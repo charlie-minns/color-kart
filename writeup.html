@@ -11,12 +11,35 @@
 <br>
 
 <p><hr><p><h2>Abstract</h2><p><hr><p>
-
+    For our final project, we created a web-based, player-versus-player racing game with the ThreeJS library. We were inspired 
+    by the gameplay mechanics and design of Nintendo’s Mario Kart franchise as well as the split-screen multiplayer gameplay and 
+    style of COS 426 Spring 2019’s ColoRing. As such, we implemented two-player keyboard controls, split-screen functionality, 
+    driving mechanics, collision physics, a basic track, moving obstacles, consumable power-ups, a lap counter, as well as start 
+    and end menus. We applied a colorful design inspired by the famous Rainbow Road from the Mario Kart series.
 <p><hr><p><h2>Table of Contents</h2><p><hr><p>
 
 <ul>
-<li> <a href='#Introduction'>Introduction</a></li>
-<li> <a href='#Methodology'>Methodology</a></li>
+<li> <a href='#Introduction'>Introduction</a>
+    <ul>
+        <li> <a href='#Goal'>Goal</a></li>
+        <li> <a href='#Previous Work'>Previous Work</a></li>
+        <li> <a href='#Approach'>Approach</a></li>
+    </ul>
+</li>
+<li> <a href='#Methodology'>Methodology</a>
+    <ul>
+        <li> <a href='#Start and End Menus'>Start and End Menus</a></li>
+        <li> <a href='#Cameras'>Cameras</a></li>
+        <li> <a href='#Split Screen'>Split Screen</a></li>
+        <li> <a href='#Road'>Road</a></li>
+        <li> <a href='#Player'>Player</a></li>
+        <li> <a href='#Collisions'>Collisions</a></li>
+        <li> <a href='#Controller'>Controller</a></li>
+        <li> <a href='#Lap Counter'>Lap Counter</a></li>
+        <li> <a href='#Power-ups'>Power-ups</a></li>
+        <li> <a href='#Obstacles'>Obstacles</a></li>
+    </ul>
+</li>
 <li> <a href='#Results'>Results</a></li>
 <li> <a href='#Conclusion'>Conclusion</a></li>
 <li> <a href='#Contributions'>Contributions</a></li>
@@ -24,12 +47,44 @@
 </ul></div>
 
 <p><hr><p><a name='Introduction'></a><h2>Introduction</h2><p><hr><p>
-<p><hr><p><h3>Goal</h3><p><hr><p>
-<p><hr><p><h3>Previous Work</h3><p><hr><p>
-<p><hr><p><h3>Approach</h3><p><hr><p>
+<p><hr><p><a name='Goal'></a><h3>Goal</h3><p><hr><p>
+    Our primary goal was to create a fun and visually appealing game similar to the non-realistic racing games we played when 
+    we were younger. We were also very set on producing a multiplayer game. Given the current pandemic and social distancing 
+    becoming ubiquitous in our society as a result, we wanted to produce something that could bring people together (even if 
+    just those in the same home) and take their minds off of the many additional stresses people are feeling in these trying times.
+    <br><br>
+    As such, any potential user looking for an enjoyable experience would benefit. As would anyone looking to best a friend or family 
+    member in a casual competition. Alternatively, anyone looking to create a similar game could take note of our approaches in 
+    implementing the core components of our project and extend our ideas even further or consider some alternative approaches that 
+    would work even better.
+
+<p><hr><p><a name='Previous Work'></a><h3>Previous Work</h3><p><hr><p>
+    As mentioned above, our game follows in the footsteps of Mario Kart and other non-realistic racing games. Many components of 
+    our game, including the driving controls, consumable power-ups, moving obstacles, track, and the player models themselves were
+    inspired by such games. We were also inspired by the split-screen player-versus-player set-up and color theme in ColoRing from 
+    Spring 2019. Both of these aspects were incorporated into our game.
+    <br><br>
+    Both Mario Kart (and related games), as well as ColoRing, succeed in their gameplay mechanics, including their handling of 
+    collisions between objects and movement physics. Likewise, both are extremely visually pleasing and provide an enjoyable 
+    experience to the player(s). We believe we have successfully incorporated these elements into our project.
+
+<p><hr><p><a name='Approach'></a><h3>Approach</h3><p><hr><p>
+    Since we created a racing game, the core features of our project are the driving mechanics and collision physics. Both of 
+    these allow the player to move about and interact with the track, obstacles, and power-ups. Our approach was to implement 
+    a basic two-dimensional physics in three-dimensional space. Like in Assignment 5, we keep track of the total net forces on 
+    the player and update their position using Verlet integration. We also using bounding boxes to detect collisions with the 
+    track walls, obstacles, power-ups, and between players. Upon detecting a collision, we apply a bounce force to the player(s) 
+    involved in the collision.
+    <br><br>
+    We believe that such an approach should work well in a basic, planar setting with relatively few collisions with basic objects. 
+    In other words, we thought it would work well in precisely the setting we were seeking to create: our track is planar, we only
+    have two players, we use basic geometries (ThreeJS primitives) for most of our objects. Our approach should work well under 
+    these circumstances precisely because of the relative simplicity. Of course, this is not to disparage what we have created; we 
+    are merely observing that good results can be achieved with simple techniques.
+
 
 <p><hr><p><a name='Methodology'></a><h2>Methodology</h2><p><hr><p>
-<p><hr><p><h3>Start and End Menus</h3><p><hr><p>
+<p><hr><p><a name='Start and End Menus'></a><h3>Start and End Menus</h3><p><hr><p>
     One piece of the game that we implemented was the Start and End menus, allowing the players to input their names, as well 
 as refresh the game if they wish to play a second time. There was the potential to implement this piece in many different ways, 
 including showing a mini canvas over the game before it starts and after it ends, while manipulating the opacity of the menus. 
@@ -47,13 +102,44 @@ files as all of the other functions of the game in order to keep all of the simi
 needs, having certain functions (like creating the canvases as well as showing them) close together made debugging a bit 
 easier, especially considering none of us had a lot of HTML/CSS experience from the past.
 
-<p><hr><p><h3>Cameras</h3><p><hr><p>
-<p><hr><p><h3>Split Screen</h3><p><hr><p>
-<p><hr><p><h3>Road</h3><p><hr><p>
-<p><hr><p><h3>Player</h3><p><hr><p>
-<p><hr><p><h3>Collisions</h3><p><hr><p>
-<p><hr><p><h3>Controller</h3><p><hr><p>
-<p><hr><p><h3>Lap Counter</h3><p><hr><p>
+<p><hr><p><a name='Cameras'></a><h3>Cameras</h3><p><hr><p>
+    We use two perspective cameras that follow each player as they drive around the track. This is achieved by setting a relative 
+    offset position for the camera from the player and making the camera a child of the player so as the players move and their 
+    positions are updated, so are the positions of their corresponding cameras. The two cameras are used to achieve the split screen 
+    functionality with the left half of the screen corresponding to player one’s camera and the right half corresponding to player 
+    two’s camera.
+    <br><br>
+    We sought to recreate the standard third-person point-of-view that is standard in racing games. Not only is this familiar to 
+    players, it lets them better see the track, obstacles, and power-ups. While this is of course better for the gameplay experience, 
+    it also lets the player better see and enjoy the aesthetic we so carefully created.
+    <br><br>
+    Added to each camera object was an audio listener object. The listener for the first camera was used to play the background music 
+    (found from SoundCloud and cited below) while the listener for the second camera played the engine sounds (also cited below), which 
+    are actually the motor of a string trimmer for landscaping. 
+
+<p><hr><p><a name='Split Screen'></a><h3>Split Screen</h3><p><hr><p>
+<p><hr><p><a name='Road'></a><h3>Road</h3><p><hr><p>
+    In creating our track, there were a number of implementations that we considered. One ambitious implementation would have 
+    been to use a parametric geometry. While itself a ThreeJS primitive, this geometry could have allowed us to create truly 
+    complex tracks that would have rivaled commercial racing games. However, doing so would have been very complex and could 
+    have forced us to reconsider our approach to the driving physics. 
+    <br><br>
+    The approach we ended up going with was from our MVP: we used a ring geometry to create a basic circular track. A clear 
+    advantage of this approach was its simplicity. By saving time with the geometry, we could focus more on aesthetic and 
+    other core components of the game, like getting the driving and collisions right. To make up for this simplicity, we used 
+    a shader material with a rainbow fragment shader from ShaderToy to create the track mesh. This is how our track is 
+    reminiscent of Mario Kart’s Rainbow Road.
+    <br><br>
+    This ring shape also made it easy to create track walls. We used two torus geometries for the walls and merged them together 
+    to increase efficiency. Keeping with the theme, we used a MeshNormalMaterial to create a rainbow effect seen on the walls.
+    <br><br>
+    Lastly, the start line/lap indicator was created with a simple plane geometry placed just above the track surface with a 
+    checkerboard texture mapped onto it.
+
+<p><hr><p><a name='Player'></a><h3>Player</h3><p><hr><p>
+<p><hr><p><a name='Collisions'></a><h3>Collisions</h3><p><hr><p>
+<p><hr><p><a name='Controller'></a><h3>Controller</h3><p><hr><p>
+<p><hr><p><a name='Lap Counter'></a><h3>Lap Counter</h3><p><hr><p>
     Yet another piece of the game that we needed to implement in order to complete our approach was the Lap Counter. Since the 
 goal of winning the game was heavily reliant on the number of laps traversed by a given player (at least in our approach), it 
 was essential that we made sure there was no way to cheat the system in any way. For example, our first idea was that we could 
@@ -70,8 +156,21 @@ the bounding box idea, we considered an approach in which we included a plane th
 that our track is circular and a player would cross the plane two times in one lap, there were too many conditions to consider 
 to really consider this implementation over the bounding box implementation.
 
-<p><hr><p><h3>Power-ups</h3><p><hr><p>
-<p><hr><p><h3>Obstacles</h3><p><hr><p>
+<p><hr><p><a name='Power-ups'></a><h3>Power-ups</h3><p><hr><p>
+<p><hr><p><a name='Obstacles'></a><h3>Obstacles</h3><p><hr><p>
+    To make the gameplay more interesting, we created three moving objects that move along the track, as well as up and down 
+    through the road, and can stop the players in their tracks if they are not careful to avoid them. 
+    <br><br>
+    Of course, there were many directions we could have taken this in. We could have created different types of obstacles, 
+    including walls that drop down at random (or regular) intervals, objects of different sizes, etc. In the end, given how 
+    small our track is, we thought that three octahedrons moving along and through the track added enough complexity to make 
+    the game more interesting, but not too much so as to make the game frustrating or exceedingly difficult.
+    <br><br>
+    For material, we used the MeshNormalMaterial (as with the road walls and power-ups) to keep with our theme. In order to 
+    achieve the movement, we use sinusoidal functions varying with the timestamp. To achieve the circular orbit around the 
+    track, we use the parametric equation of a circle. We also use sinusoidal functions in the y direction to get the object 
+    to bob up and down through the track. The positions of the meshes are set in our update function for the class.
+
 
 <p><hr><p><a name='Results'></a><h2>Results</h2><p><hr><p>
     As a whole, we measured success by the playability of the game, and just how fun it was for us and others to race together. 
