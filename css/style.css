@@ -128,10 +128,12 @@ h1 {
     font-size: 100%;
 }
 h2 {
+    margin-left:20px;
     margin-top:10px;
-    font-size: 70%;
+    font-size: 80%;
 }
 h3 {
+    margin-left:40px;
     font-size: 60%;
 }
 
