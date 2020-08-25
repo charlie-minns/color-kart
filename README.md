@@ -1,6 +1,6 @@
 # Colorful Kart Racing
 
-This is our final project for COS 426, Computer Graphics. Thank you to the course TAs for providing a simple scene, camera, and renderer in a modern JavaScript environment for us to build off of, which can found found at [this link](https://reillybova.github.io/three-seed/).
+This is our final project for COS 426, Computer Graphics. Our game is available to play [here](https://charlie-minns.github.io/color-kart/)! Thank you to the course TAs for providing a simple scene, camera, and renderer in a modern JavaScript environment for us to build off of, which can found found at [this link](https://reillybova.github.io/three-seed/).
 
 ## app.js
 This file creates the scene using the RacingScene class, creates cameras for each player, and sets up the render loop. In this file, we created the main menu which allows the user to input the players' names, and linked a button that would activate the render loop and begin the game by calling the scene's update function. We enabled split screen capabilities by creating two cameras and rendering the scene from each. The view produced is displayed on each side of the screen, split vertically. 
